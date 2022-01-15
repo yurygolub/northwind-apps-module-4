@@ -1,10 +1,15 @@
-Package Manager Console Commands for Migrations
+# Package Manager Console Commands for Migrations     
+
 Migration commands in Entity Framework Core can be executed using the Package Manager Console in Visual Studio. Open the Package Manager Console from menu Tools -> NuGet Package Manger -> Package Manager Console in Visual Studio to execute the following commands.
 
-PMC Command	Usage
-Get-Help entityframework	Displays information about entity framework commands.
-Add-Migration <migration name>	Creates a migration by adding a migration snapshot.
-Remove-Migration	Removes the last migration snapshot.
+| PMC Command | Usage |
+| ------ | ------ |
+| Get-Help entityframework | Displays in formation about entity framework commands. |
+| Add-Migration <migration name> | Creates a migration by adding a migration snapshot. |
+| Remove-Migration | Removes the last migration snapshot. |
+| Add-Migration <migration name> | Creates a migration by adding a migration snapshot. |
+	
+	
 Update-Database	Updates the database schema based on the last migration snapshot.
 Script-Migration	Generates a SQL script using all the migration snapshots.
 Scaffold-DbContext	Generates a DbContext and entity type classes for a specified database. This is called reverse engineering.
