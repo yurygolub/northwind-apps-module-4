@@ -30,7 +30,7 @@ __Внимание!__ В этом модуле используется боль
 
 1. Создайте решение _NorthwindWebApps_:
 
-![NorthwindWebApps: Services](northwindwebapps-services.png)
+![NorthwindWebApps: Services](Pictures/northwindwebapps-services.png)
 
 2. В проект _Northwind.Services_ добавьте файлы:
 
@@ -73,7 +73,7 @@ __Внимание!__ В этом модуле используется боль
 
 11. Проанализируйте зависимости:
 
-![NorthwindWebApps: IProductManagementService](northwindapiapp-iproductmanagementservice.png)
+![NorthwindWebApps: IProductManagementService](Pictures/northwindapiapp-iproductmanagementservice.png)
 
 12. Выделите из интерфейса _IProductManagementService_ интерфейсы для работы с категориями и картинками - _IProductCategoryManagementService_ и _IProductCategoryPicturesService_, перенесите в новые интерфейсы соответствующие методы, зарегистрируйте интерфейсы как сервисы и исправьте конструкторы соответствующих контроллеров. См. [I: Принцип разделения интерфейса](https://refactoring.guru/ru/didp/principles/solid-principles/isp).
 
@@ -81,11 +81,11 @@ __Внимание!__ В этом модуле используется боль
 
 14. Добавьте библиотеку _Northwind.Services.EntityFrameworkCore_, исправьте зависимости на nuget-пакеты, перенесите в библиотеку код сервисов (_ProductManagementService_,  _ProductCategoryManagementService_, _ProductCategoryPictureService_) и все необходимые классы.
 
-![NorthwindWebApps: EntityFramework Core](northwind-webapi-entityframeworkcore.png)
+![NorthwindWebApps: EntityFramework Core](Pictures/northwind-webapi-entityframeworkcore.png)
 
 15. Проанализируйте зависимости:
 
-![NorthwindWebApps: 3 interfaces](northwindapiapp-three-interfaces.png)
+![NorthwindWebApps: 3 interfaces](Pictures/northwindapiapp-three-interfaces.png)
 
 16. Добавьте документацию для методов Web API. См. [Use web API conventions](https://docs.microsoft.com/en-us/aspnet/core/web-api/advanced/conventions).
 
@@ -116,7 +116,7 @@ services.AddTransient<DataAccess.NorthwindDataAccessFactory, DataAccess.SqlServe
 
 3. Добавьте новую библиотеку _Northwind.Services.DataAccess_.
 
-![NorthwindWebApps: DAO](northwindapiapp-dao.png)
+![NorthwindWebApps: DAO](Pictures/northwindapiapp-dao.png)
 
 4. В _Northwind.Services.DataAccess_ создайте новый сервис _ProductManagementDataAccessService_, который должен реализовывать интерфейсы _IProductManagementService_. Сервис должен использовать зависимость на _NorthwindDataAccessFactory_, чтобы получать данные из БД Northwind. Добавьте реализацию методов сервиса.
 
@@ -128,7 +128,7 @@ services.AddTransient<DataAccess.NorthwindDataAccessFactory, DataAccess.SqlServe
 
 8. Создайте новую библиотеку _Northwind.DataAccess.SqlServer_, отредактируйте проекты, чтобы изменить пакеты и ссылки на связанные проекты.
 
-![NorthwindWebApps: Northwind.DataAccess.SqlServer](northwindapiapp-dao-sqlserver.png)
+![NorthwindWebApps: Northwind.DataAccess.SqlServer](Pictures/northwindapiapp-dao-sqlserver.png)
 
 9. Перенесите код классов, которые отвечают за работу с БД MS SQL в _Northwind.DataAccess.SqlServer_.
 
