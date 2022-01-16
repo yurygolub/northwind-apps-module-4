@@ -8,61 +8,18 @@ Migration commands in Entity Framework Core can be executed using the Package Ma
 | Add-Migration <migration name> | Creates a migration by adding a migration snapshot. |
 | Remove-Migration | Removes the last migration snapshot. |
 | Add-Migration <migration name> | Creates a migration by adding a migration snapshot. |
+| Update-Database | Updates the database schema based on the last migration snapshot. |	
+| Script-Migration | Generates a SQL script using all the migration snapshots. |	
+| Scaffold-DbContext | Generates a DbContext and entity type classes for a specified database. This is called reverse engineering. |	
+| Get-DbContext | Gets information about a DbContext type. |	
+| Drop-Database | Drops the database. |		
 	
-	
-Update-Database	Updates the database schema based on the last migration snapshot.
-Script-Migration	Generates a SQL script using all the migration snapshots.
-Scaffold-DbContext	Generates a DbContext and entity type classes for a specified database. This is called reverse engineering.
-Get-DbContext	Gets information about a DbContext type.
-Drop-Database	Drops the database.
-Get-Help
+## Get-Help
 PM> get-help entityframework
-        
-                     _/\__
-               ---==/    \\
-         ___  ___   |.    \|\
-        | __|| __|  |  )   \\\
-        | _| | _|   \_/ |  //|\\
-        |___||_|       /   \\\/\\
 
-TOPIC
-    about_EntityFrameworkCore
-
-SHORT DESCRIPTION
-    Provides information about the Entity Framework Core Package Manager Console Tools.
-
-LONG DESCRIPTION
-    This topic describes the Entity Framework Core Package Manager Console Tools. 
-    See https://docs.efproject.net for information on Entity Framework Core.
-
-    The following Entity Framework Core commands are available.
-
-        Cmdlet                      Description
-        --------------------------  ---------------------------------------------------
-        Add-Migration               Adds a new migration.
-
-        Drop-Database               Drops the database.
-
-        Get-DbContext               Gets information about a DbContext type.
-
-        Remove-Migration            Removes the last migration.
-
-        Scaffold-DbContext          Scaffolds a DbContext and entity types for a database.
-
-        Script-Migration            Generates a SQL script from migrations.
-
-        Update-Database             Updates the database to a specified migration.
-
-SEE ALSO
-    Add-Migration
-    Drop-Database
-    Get-DbContext
-    Remove-Migration
-    Scaffold-DbContext
-    Script-Migration
-    Update-Database
-        
-Add-Migration
+ ![](Pictures/ef-help.png)
+     
+## Add-Migration
 NAME
     Add-Migration
     
@@ -83,7 +40,7 @@ REMARKS
     For more information, type: "get-help Add-Migration -detailed".
     For technical information, type: "get-help Add-Migration -full".
     
-Remove-Migration
+## Remove-Migration
 NAME
     Remove-Migration
     
@@ -106,7 +63,7 @@ REMARKS
     For more information, type: "get-help Remove-Migration -detailed".
     For technical information, type: "get-help Remove-Migration -full".
  
-Update-Database
+## Update-Database
 NAME
     Update-Database
     
@@ -130,7 +87,7 @@ RELATED LINKS
 REMARKS
     To see the examples, type: "get-help Update-Database -examples".
     For more information, type: "get-help Update-Database -detailed".
-    For technical information, type: "get-help Update-Database -full".
+## For technical information, type: "get-help Update-Database -full".
 Script-migration
 NAME
     Script-Migration
@@ -161,7 +118,7 @@ REMARKS
     For more information, type: "get-help Script-Migration -detailed".
     For technical information, type: "get-help Script-Migration -full".
 
-scaffold-dbcontext
+## scaffold-dbcontext
 NAME
     Scaffold-DbContext
     
@@ -188,7 +145,7 @@ REMARKS
     For more information, type: "get-help Scaffold-DbContext -detailed".
     For technical information, type: "get-help Scaffold-DbContext -full".
 
-Get-DbContext
+## Get-DbContext
 NAME
     Get-DbContext
     
@@ -213,7 +170,7 @@ REMARKS
     For more information, type: "get-help Get-DbContext -detailed".
     For technical information, type: "get-help Get-DbContext -full".
 
-Drop-Database
+## Drop-Database
 NAME
     Drop-Database
     
