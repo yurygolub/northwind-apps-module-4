@@ -131,7 +131,7 @@ REMARKS
     To see the examples, type: "get-help Update-Database -examples".
     For more information, type: "get-help Update-Database -detailed".
 ## For technical information, type: "get-help Update-Database -full".
-Script-migration
+Script-Migration
 NAME
     Script-Migration
     
@@ -161,7 +161,7 @@ REMARKS
     For more information, type: "get-help Script-Migration -detailed".
     For technical information, type: "get-help Script-Migration -full".
 
-## scaffold-dbcontext
+## Scaffold-Dbcontext
 NAME
     Scaffold-DbContext
     
