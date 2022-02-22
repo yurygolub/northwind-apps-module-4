@@ -1,6 +1,4 @@
-﻿// ReSharper disable CheckNamespace
-
-namespace Northwind.Services.Products
+﻿namespace Northwind.Services.Products
 {
     /// <summary>
     /// Represents a product category.

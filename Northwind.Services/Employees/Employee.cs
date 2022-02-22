@@ -1,6 +1,4 @@
-﻿// ReSharper disable CheckNamespace
-
-namespace Northwind.Services.Employees
+﻿namespace Northwind.Services.Employees
 {
     /// <summary>
     /// Represents an employee.

@@ -1,5 +1,4 @@
-﻿// ReSharper disable CheckNamespace
-using System;
+﻿using System;
 using System.Data.SqlClient;
 using Northwind.DataAccess.Employees;
 using Northwind.DataAccess.Products;

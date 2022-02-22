@@ -1,5 +1,4 @@
-﻿// ReSharper disable CheckNamespace
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 
 namespace Northwind.Services.Products
