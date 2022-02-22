@@ -1,50 +1,50 @@
 # Command Line Interface Commands for Migrations
 
-Use .NET Core Command List Interface to execute entity framework core commands. To use .NET CLI, add <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.0" /> under <ItemGroup> node by editing your .NET Core project's .csproj file.
+Use .NET Core Command List Interface to execute entity framework core commands. To use .NET CLI, add <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.0" /> under <ItemGroup> node by editing your .NET Core project's .csproj file.   
 
-Open command prompt and navigate to your project's root folder and enter dotnet ef --help to list EF Core commands, as shown below.
+Open command prompt and navigate to your project's root folder and enter dotnet ef --help to list EF Core commands, as shown below.   
 
-C:> dotnet ef --help
-Entity Framework Core .NET Command Line Tools 2.0.0-rtm-26452
-
-Usage: dotnet ef [options] [command]
-
-Options:
-  --version        Show version information
-  -h|--help        Show help information
-  -v|--verbose     Show verbose output.
-  --no-color       Don't colorize output.
-  --prefix-output  Prefix output with level.
-
-Commands:
-  database    Commands to manage the database.
-  dbcontext   Commands to manage DbContext types.
-  migrations  Commands to manage migrations.
-
-Use "dotnet ef [command] --help" for more information about a command.
-    
-As you can see above, there are three main EF commands available: database, dbcontext and migrations. The following table lists all EF commands and sub commands.
-
-Command	Sub Commands	Usage
-Database	drop	Drops the database.
-update	Updates the database to a specified migration.
-DbContext	info	Gets information about a DbContext type.
-list	Lists available DbContext types.
-scaffold	Scaffolds a DbContext and entity types for a database.
-Migration	add	Adds a new migration.
-list	Lists available migrations.
-remove	Removes the last migration.
-script:	Generates a SQL script from migrations.
-Let's see available options for each command.
-
-Database Drop
-> dotnet ef database drop
-
-Usage: dotnet ef database drop [options]
+C:> dotnet ef --help   
+Entity Framework Core .NET Command Line Tools 2.0.0-rtm-26452   
+   
+Usage: dotnet ef [options] [command]   
 
 Options:
-  -f|--force                             Don't confirm.
-  --dry-run                              Show which database would be dropped, but don't drop it.
+  --version        Show version information     
+  -h|--help        Show help information   
+  -v|--verbose     Show verbose output   
+  --no-color       Don't colorize output   
+  --prefix-output  Prefix output with level   
+   
+Commands:   
+  database    Commands to manage the database.   
+  dbcontext   Commands to manage DbContext types.   
+  migrations  Commands to manage migrations.   
+   
+Use "dotnet ef [command] --help" for more information about a command.   
+       
+As you can see above, there are three main EF commands available: database, dbcontext and migrations. The following table lists all EF commands and sub commands.   
+   
+Command	Sub Commands	Usage   
+Database	drop	Drops the database.   
+update	Updates the database to a specified migration.   
+DbContext	info	Gets information about a DbContext type.   
+list	Lists available DbContext types.   
+scaffold	Scaffolds a DbContext and entity types for a database.   
+Migration	add	Adds a new migration.   
+list	Lists available migrations.   
+remove	Removes the last migration.   
+script:	Generates a SQL script from migrations.   
+Let's see available options for each command.   
+   
+Database Drop   
+> dotnet ef database drop   
+   
+Usage: dotnet ef database drop [options]   
+   
+Options:   
+  -f|--force                             Don't confirm.   
+  --dry-run                              Show which database would be dropped, but don't drop it.   
   -c|--context <DBCONTEXT>               The DbContext to use.
   -p|--project <PROJECT>                 The project to use.
   -s|--startup-project <PROJECT>         The startup project to use.
