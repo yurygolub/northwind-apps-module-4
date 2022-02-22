@@ -112,7 +112,7 @@ services.AddScoped((service) =>
 
 services.AddTransient<DataAccess.NorthwindDataAccessFactory, DataAccess.SqlServerDataAccessFactory>();
 ```
-> Класс SqlConnection доступен в двух пространствах имен - System.Data и Microsoft.Data. Используйте класс System.Data.SqlConnection. Также, возможно использование пространства Microsoft.Data, однако в этом случае все другие классы проекта тоже должны использовать пространство Microsoft.Data вместо System.Data. См. [сообщение от vysotnikolay](https://github.com/epam-dotnet-lab/northwind-apps/issues/20). Также см. блог [Introducing the new Microsoft.Data.SqlClient](https://devblogs.microsoft.com/dotnet/introducing-the-new-microsoftdatasqlclient).
+> Класс SqlConnection доступен в двух пространствах имен - System.Data и Microsoft.Data. Используйте класс System.Data.SqlConnection. Также, возможно использование пространства Microsoft.Data, однако в этом случае все другие классы проекта тоже должны использовать пространство Microsoft.Data вместо System.Data. Также см. блог [Introducing the new Microsoft.Data.SqlClient](https://devblogs.microsoft.com/dotnet/introducing-the-new-microsoftdatasqlclient).
 
 3. Добавьте новую библиотеку _Northwind.Services.DataAccess_.
 
