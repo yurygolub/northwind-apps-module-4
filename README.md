@@ -63,7 +63,7 @@ __Внимание!__ В этом модуле используется боль
 | Update           |           |                      |              |               |
 | Delete           |           |                      |              |               |
 
-9. Реализуйте в _ProductCategoriesController_ новые методы для управления картинкой (поток байтов) для категории. См. [Upload files in ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/mvc/models/file-uploads), [IFormFile](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.http.iformfile) и [ControllerBase.File](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.controllerbase.file). **[Данные изображения состоят из OLE header (78 байт) и BMP.](https://mathematica.stackexchange.com/questions/184743/how-to-extract-bitmap-image-from-sql-records)
+9. Реализуйте в _ProductCategoriesController_ новые методы для управления картинкой (поток байтов) для категории. См. [Upload files in ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/mvc/models/file-uploads), [IFormFile](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.http.iformfile) и [ControllerBase.File](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.controllerbase.file). *[_Данные изображения состоят из OLE header (78 байт) и BMP._](https://mathematica.stackexchange.com/questions/184743/how-to-extract-bitmap-image-from-sql-records)
 
 | Operation        | HTTP Verb | URI                                  | Request body    | Response body  |
 | ---------------- | --------- | ------------------------------------ | --------------- | -------------- |
