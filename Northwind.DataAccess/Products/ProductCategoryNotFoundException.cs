@@ -8,9 +8,7 @@ namespace Northwind.DataAccess.Products
     /// The exception that is thrown when a product category is not found in a data storage.
     /// </summary>
     [Serializable]
-#pragma warning disable CA1032 // Implement standard exception constructors
     public class ProductCategoryNotFoundException : Exception
-#pragma warning restore CA1032 // Implement standard exception constructors
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ProductCategoryNotFoundException"/> class with specified identifier and object type.

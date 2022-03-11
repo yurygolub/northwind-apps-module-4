@@ -26,8 +26,6 @@ namespace Northwind.DataAccess.Products
         /// <summary>
         /// Gets or sets a product category picture.
         /// </summary>
-#pragma warning disable CA1819 // Properties should not return arrays
         public byte[] Picture { get; set; }
-#pragma warning restore CA1819 // Properties should not return arrays
     }
 }

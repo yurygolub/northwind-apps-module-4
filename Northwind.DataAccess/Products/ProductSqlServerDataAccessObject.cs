@@ -187,10 +187,7 @@ WHERE p.CategoryID in ('{0}')";
             string commandText = string.Format(CultureInfo.InvariantCulture, commandTemplate, whereInClause);
 
             var products = new List<ProductTransferObject>();
-
-#pragma warning disable CA2100 // Review SQL queries for security vulnerabilities
             using (var command = new SqlCommand(commandText, this.connection))
-#pragma warning restore CA2100 // Review SQL queries for security vulnerabilities
             using (var reader = command.ExecuteReader())
             {
                 while (reader.Read())
@@ -415,9 +412,7 @@ WHERE p.CategoryID in ('{0}')";
         {
             var products = new List<ProductTransferObject>();
 
-#pragma warning disable CA2100 // Review SQL queries for security vulnerabilities
             using (var command = new SqlCommand(commandText, this.connection))
-#pragma warning restore CA2100 // Review SQL queries for security vulnerabilities
             using (var reader = command.ExecuteReader())
             {
                 while (reader.Read())
