@@ -37,12 +37,12 @@ namespace Northwind.Services.Employees
         /// <summary>
         /// Gets or sets a employee birth date.
         /// </summary>
-        public DateTime BirthDate { get; set; }
+        public DateTime? BirthDate { get; set; }
 
         /// <summary>
         /// Gets or sets a employee hire date.
         /// </summary>
-        public DateTime HireDate { get; set; }
+        public DateTime? HireDate { get; set; }
 
         /// <summary>
         /// Gets or sets a employee address.
@@ -92,7 +92,7 @@ namespace Northwind.Services.Employees
         /// <summary>
         /// Gets or sets a employee reports.
         /// </summary>
-        public int ReportsTo { get; set; }
+        public int? ReportsTo { get; set; }
 
         /// <summary>
         /// Gets or sets a employee photo path.
