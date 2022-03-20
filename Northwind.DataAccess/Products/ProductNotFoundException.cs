@@ -17,7 +17,7 @@ namespace Northwind.DataAccess.Products
         public ProductNotFoundException(int id)
             : base(string.Format(CultureInfo.InvariantCulture, $"A product with identifier = {id}."))
         {
-            this.ProductCategoryId = id;
+            this.ProductId = id;
         }
 
         /// <summary>
@@ -31,8 +31,8 @@ namespace Northwind.DataAccess.Products
         }
 
         /// <summary>
-        /// Gets an identifier of a product category that is missed in a data storage.
+        /// Gets an identifier of a product that is missed in a data storage.
         /// </summary>
-        public int ProductCategoryId { get; }
+        public int ProductId { get; }
     }
 }
