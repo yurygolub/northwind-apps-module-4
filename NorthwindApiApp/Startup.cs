@@ -6,6 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Northwind.DataAccess;
 using Northwind.DataAccess.SqlServer;
+using Northwind.Services.Employees;
+using Northwind.Services.Implementation.Employees;
 using Northwind.Services.Implementation.Products;
 using Northwind.Services.Products;
 
@@ -25,6 +27,7 @@ namespace NorthwindApiApp
             services
                 .AddTransient<IProductManagementService, ProductManagementService>()
                 .AddTransient<IProductCategoryManagementService, ProductCategoryManagementService>()
+                .AddTransient<IEmployeeManagementService, EmployeeManagementService>()
                 .AddScoped(s =>
                 {
                     string connecionString = this.Configuration.GetConnectionString("SqlConnection");
