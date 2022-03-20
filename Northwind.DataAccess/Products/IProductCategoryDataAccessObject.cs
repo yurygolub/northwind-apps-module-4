@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Northwind.DataAccess.Products
 {
@@ -41,13 +42,13 @@ namespace Northwind.DataAccess.Products
         /// <param name="offset">An offset of the first object.</param>
         /// <param name="limit">A limit of returned objects.</param>
         /// <returns>A <see cref="List{T}"/> of <see cref="ProductCategoryTransferObject"/>.</returns>
-        IList<ProductCategoryTransferObject> SelectProductCategories(int offset, int limit);
+        Task<IList<ProductCategoryTransferObject>> SelectProductCategoriesAsync(int offset, int limit);
 
         /// <summary>
         /// Selects all Northwind product categories with specified names.
         /// </summary>
         /// <param name="productCategoryNames">A <see cref="ICollection{T}"/> of product category names.</param>
         /// <returns>A <see cref="List{T}"/> of <see cref="ProductCategoryTransferObject"/>.</returns>
-        IList<ProductCategoryTransferObject> SelectProductCategoriesByName(ICollection<string> productCategoryNames);
+        Task<IList<ProductCategoryTransferObject>> SelectProductCategoriesByNameAsync(ICollection<string> productCategoryNames);
     }
 }

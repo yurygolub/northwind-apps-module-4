@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Northwind.Services.Products;
 
 namespace NorthwindApiApp.Controllers
@@ -14,9 +15,9 @@ namespace NorthwindApiApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetProductCategories()
+        public async Task<IActionResult> GetProductCategories()
         {
-            return this.Ok(this.managementService.ShowCategories(0, 100));
+            return this.Ok(await this.managementService.ShowCategoriesAsync(0, 100));
         }
 
         [HttpGet("{id}")]

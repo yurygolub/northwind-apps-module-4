@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Northwind.DataAccess;
 using Northwind.DataAccess.Products;
 using Northwind.Services.Products;
@@ -51,24 +52,24 @@ namespace Northwind.Services.Implementation.Products
         }
 
         /// <inheritdoc/>
-        public IList<ProductCategory> LookupCategoriesByName(IList<string> names)
+        public async Task<IList<ProductCategory>> LookupCategoriesByName(IList<string> names)
         {
             if (names is null)
             {
                 throw new ArgumentNullException(nameof(names));
             }
 
-            return this.dataAccessObject
-                .SelectProductCategoriesByName(names)
+            var productCategories = await this.dataAccessObject.SelectProductCategoriesByNameAsync(names);
+            return productCategories
                 .Select(p => MapProductCategory(p))
                 .ToList();
         }
 
         /// <inheritdoc/>
-        public IList<ProductCategory> ShowCategories(int offset, int limit)
+        public async Task<IList<ProductCategory>> ShowCategoriesAsync(int offset, int limit)
         {
-            return this.dataAccessObject
-                .SelectProductCategories(offset, limit)
+            var productCategories = await this.dataAccessObject.SelectProductCategoriesAsync(offset, limit);
+            return productCategories
                 .Select(p => MapProductCategory(p))
                 .ToList();
         }

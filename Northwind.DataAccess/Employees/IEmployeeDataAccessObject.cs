@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Northwind.DataAccess.Employees
 {
@@ -41,6 +42,6 @@ namespace Northwind.DataAccess.Employees
         /// <param name="offset">An offset of the first object.</param>
         /// <param name="limit">A limit of returned objects.</param>
         /// <returns>An <see cref="List{T}"/> of <see cref="EmployeeTransferObject"/>.</returns>
-        IList<EmployeeTransferObject> SelectEmployees(int offset, int limit);
+        Task<IList<EmployeeTransferObject>> SelectEmployeesAsync(int offset, int limit);
     }
 }

@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using Northwind.DataAccess.Products;
 
 namespace Northwind.DataAccess.SqlServer.Products
@@ -99,7 +100,7 @@ WHERE p.ProductID = @productId";
         }
 
         /// <inheritdoc />
-        public IList<ProductTransferObject> SelectProducts(int offset, int limit)
+        public async Task<IList<ProductTransferObject>> SelectProducts(int offset, int limit)
         {
             if (offset < 0)
             {
@@ -118,11 +119,11 @@ OFFSET {0} ROWS
 FETCH FIRST {1} ROWS ONLY";
 
             string commandText = string.Format(CultureInfo.CurrentCulture, commandTemplate, offset, limit);
-            return this.ExecuteReader(commandText);
+            return await this.ExecuteReader(commandText);
         }
 
         /// <inheritdoc/>
-        public IList<ProductTransferObject> SelectProductsByName(ICollection<string> productNames)
+        public async Task<IList<ProductTransferObject>> SelectProductsByName(ICollection<string> productNames)
         {
             if (productNames == null)
             {
@@ -140,7 +141,7 @@ WHERE p.ProductName in ('{0}')
 ORDER BY p.ProductID";
 
             string commandText = string.Format(CultureInfo.CurrentCulture, commandTemplate, string.Join("', '", productNames));
-            return this.ExecuteReader(commandText);
+            return await this.ExecuteReader(commandText);
         }
 
         /// <inheritdoc/>
@@ -171,7 +172,7 @@ SELECT @@ROWCOUNT";
         }
 
         /// <inheritdoc/>
-        public IList<ProductTransferObject> SelectProductByCategory(ICollection<int> collectionOfCategoryId)
+        public async Task<IList<ProductTransferObject>> SelectProductByCategory(ICollection<int> collectionOfCategoryId)
         {
             if (collectionOfCategoryId == null)
             {
@@ -188,15 +189,14 @@ WHERE p.CategoryID in ('{0}')";
             string commandText = string.Format(CultureInfo.InvariantCulture, commandTemplate, whereInClause);
 
             var products = new List<ProductTransferObject>();
-            using (var command = new SqlCommand(commandText, this.connection))
-            using (var reader = command.ExecuteReader())
+            await using var command = new SqlCommand(commandText, this.connection);
+            await using var reader = await command.ExecuteReaderAsync();
+            
+            while (reader.Read())
             {
-                while (reader.Read())
-                {
-                    products.Add(CreateProduct(reader));
-                }
+                products.Add(CreateProduct(reader));
             }
-
+            
             return products;
         }
 
@@ -409,19 +409,17 @@ WHERE p.CategoryID in ('{0}')";
             command.Parameters[discontinuedParameter].Value = product.Discontinued;
         }
 
-        private IList<ProductTransferObject> ExecuteReader(string commandText)
+        private async Task<IList<ProductTransferObject>> ExecuteReader(string commandText)
         {
             var products = new List<ProductTransferObject>();
+            using var command = new SqlCommand(commandText, this.connection);
+            using var reader = await command.ExecuteReaderAsync();
 
-            using (var command = new SqlCommand(commandText, this.connection))
-            using (var reader = command.ExecuteReader())
+            while (reader.Read())
             {
-                while (reader.Read())
-                {
-                    products.Add(CreateProduct(reader));
-                }
+                products.Add(CreateProduct(reader));
             }
-
+            
             return products;
         }
     }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Northwind.DataAccess.Products
 {
@@ -41,20 +42,20 @@ namespace Northwind.DataAccess.Products
         /// <param name="offset">An offset of the first object.</param>
         /// <param name="limit">A limit of returned objects.</param>
         /// <returns>A <see cref="List{T}"/> of <see cref="ProductTransferObject"/>.</returns>
-        IList<ProductTransferObject> SelectProducts(int offset, int limit);
+        Task<IList<ProductTransferObject>> SelectProducts(int offset, int limit);
 
         /// <summary>
         /// Selects all Northwind products with specified names.
         /// </summary>
         /// <param name="productNames">A <see cref="IEnumerable{T}"/> of product names.</param>
         /// <returns>A <see cref="List{T}"/> of <see cref="ProductTransferObject"/>.</returns>
-        IList<ProductTransferObject> SelectProductsByName(ICollection<string> productNames);
+        Task<IList<ProductTransferObject>> SelectProductsByName(ICollection<string> productNames);
 
         /// <summary>
         /// Selects all Northwind products that belongs to specified categories.
         /// </summary>
         /// <param name="collectionOfCategoryId">A <see cref="ICollection{T}"/> of category id.</param>
         /// <returns>A <see cref="IList{T}"/> of <see cref="ProductTransferObject"/>.</returns>
-        IList<ProductTransferObject> SelectProductByCategory(ICollection<int> collectionOfCategoryId);
+        Task<IList<ProductTransferObject>> SelectProductByCategory(ICollection<int> collectionOfCategoryId);
     }
 }

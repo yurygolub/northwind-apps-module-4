@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Northwind.Services.Products
 {
@@ -13,7 +14,7 @@ namespace Northwind.Services.Products
         /// <param name="offset">An offset of the first element to return.</param>
         /// <param name="limit">A limit of elements to return.</param>
         /// <returns>A <see cref="IList{T}"/> of <see cref="ProductCategory"/>.</returns>
-        IList<ProductCategory> ShowCategories(int offset, int limit);
+        Task<IList<ProductCategory>> ShowCategoriesAsync(int offset, int limit);
 
         /// <summary>
         /// Try to show a product category with specified identifier.
@@ -42,7 +43,7 @@ namespace Northwind.Services.Products
         /// </summary>
         /// <param name="names">A list of product category names.</param>
         /// <returns>A list of product categories with specified names.</returns>
-        IList<ProductCategory> LookupCategoriesByName(IList<string> names);
+        Task<IList<ProductCategory>> LookupCategoriesByName(IList<string> names);
 
         /// <summary>
         /// Updates a product category.

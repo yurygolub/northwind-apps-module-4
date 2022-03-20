@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Globalization;
+using System.Threading.Tasks;
 using Northwind.DataAccess.Employees;
 
 namespace Northwind.DataAccess.SqlServer.Employees
@@ -93,7 +94,7 @@ WHERE e.EmployeeID = @employeeID";
         }
 
         /// <inheritdoc/>
-        public IList<EmployeeTransferObject> SelectEmployees(int offset, int limit)
+        public async Task<IList<EmployeeTransferObject>> SelectEmployeesAsync(int offset, int limit)
         {
             if (offset < 0)
             {
@@ -112,7 +113,7 @@ OFFSET {0} ROWS
 FETCH FIRST {1} ROWS ONLY";
 
             string commandText = string.Format(CultureInfo.CurrentCulture, commandTemplate, offset, limit);
-            return this.ExecuteReader(commandText);
+            return await this.ExecuteReaderAsync(commandText);
         }
 
         /// <inheritdoc/>
@@ -211,12 +212,12 @@ SELECT @@ROWCOUNT";
             }
         }
 
-        private IList<EmployeeTransferObject> ExecuteReader(string commandText)
+        private async Task<IList<EmployeeTransferObject>> ExecuteReaderAsync(string commandText)
         {
             var employees = new List<EmployeeTransferObject>();
 
-            using var command = new SqlCommand(commandText, this.connection);
-            using var reader = command.ExecuteReader();
+            await using var command = new SqlCommand(commandText, this.connection);
+            await using var reader = await command.ExecuteReaderAsync();
             while (reader.Read())
             {
                 employees.Add(CreateEmployee(reader));

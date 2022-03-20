@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Northwind.Services.Employees;
 
 namespace NorthwindApiApp.Controllers
@@ -14,9 +15,9 @@ namespace NorthwindApiApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetEmployees()
+        public async Task<IActionResult> GetEmployees()
         {
-            return this.Ok(this.managementService.ShowEmployees(0, 100));
+            return this.Ok(await this.managementService.ShowEmployeesAsync(0, 100));
         }
 
         [HttpGet("{id}")]

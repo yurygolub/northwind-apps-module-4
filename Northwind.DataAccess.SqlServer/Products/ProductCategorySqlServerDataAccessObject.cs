@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Globalization;
+using System.Threading.Tasks;
 using Northwind.DataAccess.Products;
 
 namespace Northwind.DataAccess.SqlServer.Products
@@ -98,7 +99,7 @@ WHERE c.CategoryID = @categoryId";
         }
 
         /// <inheritdoc/>
-        public IList<ProductCategoryTransferObject> SelectProductCategories(int offset, int limit)
+        public async Task<IList<ProductCategoryTransferObject>> SelectProductCategoriesAsync(int offset, int limit)
         {
             if (offset < 0)
             {
@@ -117,11 +118,11 @@ OFFSET {0} ROWS
 FETCH FIRST {1} ROWS ONLY";
 
             string commandText = string.Format(CultureInfo.CurrentCulture, commandTemplate, offset, limit);
-            return this.ExecuteReader(commandText);
+            return await this.ExecuteReaderAsync(commandText);
         }
 
         /// <inheritdoc/>
-        public IList<ProductCategoryTransferObject> SelectProductCategoriesByName(ICollection<string> productCategoryNames)
+        public async Task<IList<ProductCategoryTransferObject>> SelectProductCategoriesByNameAsync(ICollection<string> productCategoryNames)
         {
             if (productCategoryNames == null)
             {
@@ -139,7 +140,7 @@ WHERE c.CategoryName in ('{0}')
 ORDER BY c.CategoryID";
 
             string commandText = string.Format(CultureInfo.CurrentCulture, commandTemplate, string.Join("', '", productCategoryNames));
-            return this.ExecuteReader(commandText);
+            return await this.ExecuteReaderAsync(commandText);
         }
 
         /// <inheritdoc/>
@@ -231,16 +232,15 @@ SELECT @@ROWCOUNT";
             }
         }
 
-        private IList<ProductCategoryTransferObject> ExecuteReader(string commandText)
+        private async Task<IList<ProductCategoryTransferObject>> ExecuteReaderAsync(string commandText)
         {
             var productCategories = new List<ProductCategoryTransferObject>();
-            using (var command = new SqlCommand(commandText, this.connection))
-            using (var reader = command.ExecuteReader())
+            using var command = new SqlCommand(commandText, this.connection);
+            using var reader = await command.ExecuteReaderAsync();
+            
+            while (reader.Read())
             {
-                while (reader.Read())
-                {
-                    productCategories.Add(CreateProductCategory(reader));
-                }
+                productCategories.Add(CreateProductCategory(reader));
             }
 
             return productCategories;

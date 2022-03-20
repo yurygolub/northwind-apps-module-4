@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Northwind.DataAccess;
 using Northwind.DataAccess.Products;
 using Northwind.Services.Products;
@@ -51,33 +52,33 @@ namespace Northwind.Services.Implementation.Products
         }
 
         /// <inheritdoc/>
-        public IList<Product> LookupProductsByName(IList<string> names)
+        public async Task<IList<Product>> LookupProductsByName(IList<string> names)
         {
             if (names is null)
             {
                 throw new ArgumentNullException(nameof(names));
             }
 
-            return this.dataAccessObject
-                .SelectProductsByName(names)
+            var products = await this.dataAccessObject.SelectProductsByName(names);
+            return products
                 .Select(p => MapProduct(p))
                 .ToList();
         }
 
         /// <inheritdoc/>
-        public IList<Product> ShowProducts(int offset, int limit)
+        public async Task<IList<Product>> ShowProducts(int offset, int limit)
         {
-            return this.dataAccessObject
-                .SelectProducts(offset, limit)
+            var products = await this.dataAccessObject.SelectProducts(offset, limit);
+            return products
                 .Select(p => MapProduct(p))
                 .ToList();
         }
 
         /// <inheritdoc/>
-        public IList<Product> ShowProductsForCategory(int categoryId)
+        public async Task<IList<Product>> ShowProductsForCategory(int categoryId)
         {
-            return this.dataAccessObject
-                .SelectProductByCategory(new[] { categoryId })
+            var products = await this.dataAccessObject.SelectProductByCategory(new[] { categoryId });
+            return products
                 .Select(p => MapProduct(p))
                 .ToList();
         }
