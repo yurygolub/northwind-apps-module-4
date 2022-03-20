@@ -65,10 +65,10 @@ namespace Northwind.Services.Implementation.Products
         }
 
         /// <inheritdoc/>
-        public IList<ProductCategory> ShowCategories()
+        public IList<ProductCategory> ShowCategories(int offset, int limit)
         {
             return this.dataAccessObject
-                .SelectProductCategories(0, 100)
+                .SelectProductCategories(offset, limit)
                 .Select(p => MapProductCategory(p))
                 .ToList();
         }

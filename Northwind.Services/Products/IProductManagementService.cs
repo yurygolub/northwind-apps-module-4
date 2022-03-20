@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 
 namespace Northwind.Services.Products
 {
@@ -11,8 +10,10 @@ namespace Northwind.Services.Products
         /// <summary>
         /// Shows a list of products using specified offset and limit for pagination.
         /// </summary>
+        /// <param name="offset">An offset of the first element to return.</param>
+        /// <param name="limit">A limit of elements to return.</param>
         /// <returns>A <see cref="IList{T}"/> of <see cref="Product"/>.</returns>
-        IList<Product> ShowProducts();
+        IList<Product> ShowProducts(int offset, int limit);
 
         /// <summary>
         /// Try to show a product with specified identifier.

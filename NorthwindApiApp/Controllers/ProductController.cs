@@ -16,7 +16,7 @@ namespace NorthwindApiApp.Controllers
         [HttpGet]
         public IActionResult GetProducts()
         {
-            return this.Ok(this.managementService.ShowProducts());
+            return this.Ok(this.managementService.ShowProducts(0, 100));
         }
 
         [HttpGet("{id}")]
