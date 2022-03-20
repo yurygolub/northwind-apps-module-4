@@ -1,4 +1,6 @@
-﻿namespace Northwind.DataAccess.Employees
+﻿using Northwind.DataAccess.Employees;
+
+namespace Northwind.DataAccess.SqlServer.Employees
 {
     /// <summary>
     /// Represents a SQL Server-tailored DAO for Northwind products.

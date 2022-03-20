@@ -1,14 +1,19 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<TargetFramework>net5.0</TargetFramework>
-		<CodeAnalysisRuleSet>..\code-analysis.ruleset</CodeAnalysisRuleSet>
-		<GenerateDocumentationFile>false</GenerateDocumentationFile>
-	</PropertyGroup>
-  
-	<ItemGroup>
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <CodeAnalysisRuleSet>..\code-analysis.ruleset</CodeAnalysisRuleSet>
+        <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <None Remove=".editorconfig" />
+    </ItemGroup>
+
+    <ItemGroup>
         <AdditionalFiles Include="..\code-analysis.ruleset" Link="Properties\code-analisys.ruleset" />
         <AdditionalFiles Include="..\stylecop.json" Link="Properties\stylecop.json" />
+        <AdditionalFiles Include=".editorconfig" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.0.0">
@@ -19,6 +24,10 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
+        <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
     </ItemGroup>
-
+    <ItemGroup>
+      <ProjectReference Include="..\Northwind.DataAccess\Northwind.DataAccess.csproj" />
+    </ItemGroup>
+    
 </Project>
