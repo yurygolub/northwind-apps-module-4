@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Northwind.Services.Implementation.Products;
 using Northwind.Services.Products;
 
 namespace NorthwindApiApp
@@ -19,6 +20,7 @@ namespace NorthwindApiApp
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<IProductManagementService, ProductManagementService>();
+            services.AddTransient<IProductCategoryManagementService, ProductCategoryManagementService>();
             services.AddControllers();
         }
 
@@ -30,7 +32,7 @@ namespace NorthwindApiApp
             }
 
             app.UseRouting();
-            
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
