@@ -14,7 +14,7 @@ namespace Northwind.Services.Products
         /// <param name="offset">An offset of the first element to return.</param>
         /// <param name="limit">A limit of elements to return.</param>
         /// <returns>A <see cref="IList{T}"/> of <see cref="Product"/>.</returns>
-        Task<IList<Product>> ShowProducts(int offset, int limit);
+        Task<IList<Product>> ShowProductsAsync(int offset, int limit);
 
         /// <summary>
         /// Try to show a product with specified identifier.
@@ -43,7 +43,7 @@ namespace Northwind.Services.Products
         /// </summary>
         /// <param name="names">A list of product names.</param>
         /// <returns>A list of products with specified names.</returns>
-        Task<IList<Product>> LookupProductsByName(IList<string> names);
+        Task<IList<Product>> LookupProductsByNameAsync(IList<string> names);
 
         /// <summary>
         /// Updates a product.
@@ -58,6 +58,6 @@ namespace Northwind.Services.Products
         /// </summary>
         /// <param name="categoryId">A product category identifier.</param>
         /// <returns>A <see cref="IList{T}"/> of <see cref="Product"/>.</returns>
-        Task<IList<Product>> ShowProductsForCategory(int categoryId);
+        Task<IList<Product>> ShowProductsForCategoryAsync(int categoryId);
     }
 }

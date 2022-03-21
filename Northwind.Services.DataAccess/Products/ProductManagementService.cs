@@ -52,7 +52,7 @@ namespace Northwind.Services.DataAccess.Products
         }
 
         /// <inheritdoc/>
-        public async Task<IList<Product>> LookupProductsByName(IList<string> names)
+        public async Task<IList<Product>> LookupProductsByNameAsync(IList<string> names)
         {
             if (names is null)
             {
@@ -66,7 +66,7 @@ namespace Northwind.Services.DataAccess.Products
         }
 
         /// <inheritdoc/>
-        public async Task<IList<Product>> ShowProducts(int offset, int limit)
+        public async Task<IList<Product>> ShowProductsAsync(int offset, int limit)
         {
             var products = await this.dataAccessObject.SelectProducts(offset, limit);
             return products
@@ -75,7 +75,7 @@ namespace Northwind.Services.DataAccess.Products
         }
 
         /// <inheritdoc/>
-        public async Task<IList<Product>> ShowProductsForCategory(int categoryId)
+        public async Task<IList<Product>> ShowProductsForCategoryAsync(int categoryId)
         {
             var products = await this.dataAccessObject.SelectProductByCategory(new[] { categoryId });
             return products

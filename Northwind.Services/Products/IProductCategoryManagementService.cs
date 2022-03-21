@@ -43,7 +43,7 @@ namespace Northwind.Services.Products
         /// </summary>
         /// <param name="names">A list of product category names.</param>
         /// <returns>A list of product categories with specified names.</returns>
-        Task<IList<ProductCategory>> LookupCategoriesByName(IList<string> names);
+        Task<IList<ProductCategory>> LookupCategoriesByNameAsync(IList<string> names);
 
         /// <summary>
         /// Updates a product category.

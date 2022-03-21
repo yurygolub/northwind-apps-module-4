@@ -52,7 +52,7 @@ namespace Northwind.Services.EntityFrameworkCore.Products
             return false;
         }
 
-        public async Task<IList<Product>> LookupProductsByName(IList<string> names)
+        public async Task<IList<Product>> LookupProductsByNameAsync(IList<string> names)
         {
             if (names is null)
             {
@@ -73,7 +73,7 @@ namespace Northwind.Services.EntityFrameworkCore.Products
             }
         }
 
-        public async Task<IList<Product>> ShowProducts(int offset, int limit)
+        public async Task<IList<Product>> ShowProductsAsync(int offset, int limit)
         {
             using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
 
@@ -89,7 +89,7 @@ namespace Northwind.Services.EntityFrameworkCore.Products
             }
         }
 
-        public async Task<IList<Product>> ShowProductsForCategory(int categoryId)
+        public async Task<IList<Product>> ShowProductsForCategoryAsync(int categoryId)
         {
             using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
 

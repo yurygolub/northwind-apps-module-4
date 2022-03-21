@@ -52,7 +52,7 @@ namespace Northwind.Services.EntityFrameworkCore.Products
             return false;
         }
 
-        public async Task<IList<ProductCategory>> LookupCategoriesByName(IList<string> names)
+        public async Task<IList<ProductCategory>> LookupCategoriesByNameAsync(IList<string> names)
         {
             if (names is null)
             {

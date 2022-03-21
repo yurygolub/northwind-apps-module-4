@@ -19,7 +19,7 @@ namespace NorthwindApiApp.Controllers
         [HttpGet]
         public async Task<IActionResult> GetProducts()
         {
-            return this.Ok(await this.managementService.ShowProducts(0, 100));
+            return this.Ok(await this.managementService.ShowProductsAsync(0, 100));
         }
 
         [HttpGet("{id}")]
