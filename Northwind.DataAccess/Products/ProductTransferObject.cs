@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace Northwind.DataAccess.Products
+namespace Northwind.Services.Products
 {
     /// <summary>
     /// Represents a TO for Northwind products.

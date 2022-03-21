@@ -4,11 +4,11 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Globalization;
 using System.Threading.Tasks;
-using Northwind.DataAccess.Products;
+using Northwind.Services.Products;
 
 #pragma warning disable S4457
 
-namespace Northwind.DataAccess.SqlServer.Products
+namespace Northwind.Services.SqlServer.Products
 {
     /// <summary>
     /// Represents a SQL Server-tailored DAO for Northwind product categories.

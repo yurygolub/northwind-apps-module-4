@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace Northwind.DataAccess.Employees
+namespace Northwind.Services.Employees
 {
     /// <summary>
     /// Represents a TO for Northwind employees.

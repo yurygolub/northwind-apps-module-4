@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Runtime.Serialization;
 
-namespace Northwind.DataAccess.Products
+namespace Northwind.Services.Products
 {
     /// <summary>
     /// The exception that is thrown when a product category is not found in a data storage.

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Data.SqlClient;
-using Northwind.DataAccess.Employees;
-using Northwind.DataAccess.Products;
-using Northwind.DataAccess.SqlServer.Employees;
-using Northwind.DataAccess.SqlServer.Products;
+using Northwind.Services.Employees;
+using Northwind.Services.Products;
+using Northwind.Services.SqlServer.Employees;
+using Northwind.Services.SqlServer.Products;
 
-namespace Northwind.DataAccess.SqlServer
+namespace Northwind.Services.SqlServer
 {
     /// <summary>
     /// Represents an abstract factory for creating Northwind DAO for SQL Server.

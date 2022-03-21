@@ -4,11 +4,11 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Globalization;
 using System.Threading.Tasks;
-using Northwind.DataAccess.Employees;
+using Northwind.Services.Employees;
 
 #pragma warning disable S4457
 
-namespace Northwind.DataAccess.SqlServer.Employees
+namespace Northwind.Services.SqlServer.Employees
 {
     /// <summary>
     /// Represents a SQL Server-tailored DAO for Northwind products.

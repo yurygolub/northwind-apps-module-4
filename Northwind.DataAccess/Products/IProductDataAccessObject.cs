@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Northwind.DataAccess.Products
+namespace Northwind.Services.Products
 {
     /// <summary>
     /// Represents a DAO for Northwind products.
