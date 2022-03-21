@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Northwind.DataAccess;
-using Northwind.DataAccess.Employees;
 using Northwind.Services.Employees;
 
-namespace Northwind.Services.Implementation.Employees
+namespace Northwind.Services.DataAccess.Employees
 {
     /// <summary>
     /// Represents a management service for employees.

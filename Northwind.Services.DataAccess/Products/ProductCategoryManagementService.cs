@@ -2,13 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Northwind.DataAccess;
-using Northwind.DataAccess.Products;
 using Northwind.Services.Products;
 
 #pragma warning disable S4457
 
-namespace Northwind.Services.Implementation.Products
+namespace Northwind.Services.DataAccess.Products
 {
     /// <summary>
     /// Represents a stub for a product category management service.
