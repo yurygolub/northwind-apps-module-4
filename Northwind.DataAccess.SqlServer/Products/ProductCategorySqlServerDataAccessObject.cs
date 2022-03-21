@@ -173,64 +173,38 @@ SELECT @@ROWCOUNT";
 
         private static ProductCategoryTransferObject CreateProductCategory(SqlDataReader reader)
         {
-            var id = (int)reader["CategoryID"];
-            var name = (string)reader["CategoryName"];
-
-            const string descriptionColumnName = "Description";
-            string description = null;
-
-            if (reader[descriptionColumnName] != DBNull.Value)
-            {
-                description = (string)reader["Description"];
-            }
-
-            const string pictureColumnName = "Picture";
-            byte[] picture = null;
-
-            if (reader[pictureColumnName] != DBNull.Value)
-            {
-                picture = (byte[])reader["Picture"];
-            }
-
             return new ProductCategoryTransferObject
             {
-                Id = id,
-                Name = name,
-                Description = description,
-                Picture = picture,
+                Id = (int)reader["CategoryID"],
+                Name = (string)reader["CategoryName"],
+                Description = GetValueClass<string>("Description"),
+                Picture = GetValueClass<byte[]>("Picture"),
             };
+
+            T GetValueClass<T>(string text)
+                where T : class
+                => reader[text] == DBNull.Value ? null : (T)reader[text];
         }
 
         private static void AddSqlParameters(ProductCategoryTransferObject productCategory, SqlCommand command)
         {
-            const string categoryNameParameter = "@categoryName";
-            command.Parameters.Add(categoryNameParameter, SqlDbType.NVarChar, 15);
-            command.Parameters[categoryNameParameter].Value = productCategory.Name;
+            SetParameter(productCategory.Name, "@categoryName", SqlDbType.NVarChar, 15, false);
+            SetParameter(productCategory.Description, "@description", SqlDbType.NText);
+            SetParameter(productCategory.Picture, "@picture", SqlDbType.Image);
 
-            const string descriptionParameter = "@description";
-            command.Parameters.Add(descriptionParameter, SqlDbType.NText);
-            command.Parameters[descriptionParameter].IsNullable = true;
+            void SetParameter<T>(T property, string parameterName, SqlDbType dbType, int? size = null, bool isNullable = true)
+            {
+                if (size is null)
+                {
+                    command.Parameters.Add(parameterName, dbType);
+                }
+                else
+                {
+                    command.Parameters.Add(parameterName, dbType, (int)size);
+                }
 
-            if (productCategory.Description != null)
-            {
-                command.Parameters[descriptionParameter].Value = productCategory.Description;
-            }
-            else
-            {
-                command.Parameters[descriptionParameter].Value = DBNull.Value;
-            }
-
-            const string pictureParameter = "@picture";
-            command.Parameters.Add(pictureParameter, SqlDbType.Image);
-            command.Parameters[pictureParameter].IsNullable = true;
-
-            if (productCategory.Picture != null)
-            {
-                command.Parameters[pictureParameter].Value = productCategory.Picture;
-            }
-            else
-            {
-                command.Parameters[pictureParameter].Value = DBNull.Value;
+                command.Parameters[parameterName].IsNullable = isNullable;
+                command.Parameters[parameterName].Value = property != null ? property : DBNull.Value;
             }
         }
 

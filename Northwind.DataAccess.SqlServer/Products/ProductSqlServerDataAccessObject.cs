@@ -204,211 +204,55 @@ WHERE p.CategoryID in ('{0}')";
 
         private static ProductTransferObject CreateProduct(SqlDataReader reader)
         {
-            var id = (int)reader["ProductID"];
-            var name = (string)reader["ProductName"];
-
-            const string supplierIdColumnName = "SupplierID";
-            int? supplierId;
-
-            if (reader[supplierIdColumnName] != DBNull.Value)
-            {
-                supplierId = (int)reader[supplierIdColumnName];
-            }
-            else
-            {
-                supplierId = null;
-            }
-
-            const string categoryIdColumnName = "CategoryID";
-            int? categoryId;
-
-            if (reader[categoryIdColumnName] != DBNull.Value)
-            {
-                categoryId = (int)reader[categoryIdColumnName];
-            }
-            else
-            {
-                categoryId = null;
-            }
-
-            const string quantityPerUnitColumnName = "QuantityPerUnit";
-            string quantityPerUnit;
-
-            if (reader[quantityPerUnitColumnName] != DBNull.Value)
-            {
-                quantityPerUnit = (string)reader[quantityPerUnitColumnName];
-            }
-            else
-            {
-                quantityPerUnit = null;
-            }
-
-            const string unitPriceColumnName = "UnitPrice";
-            decimal? unitPrice;
-
-            if (reader[unitPriceColumnName] != DBNull.Value)
-            {
-                unitPrice = (decimal)reader[unitPriceColumnName];
-            }
-            else
-            {
-                unitPrice = null;
-            }
-
-            const string unitsInStockColumnName = "UnitsInStock";
-            short? unitsInStock;
-
-            if (reader[unitsInStockColumnName] != DBNull.Value)
-            {
-                unitsInStock = (short)reader[unitsInStockColumnName];
-            }
-            else
-            {
-                unitsInStock = null;
-            }
-
-            const string unitsOnOrderColumnName = "UnitsOnOrder";
-            short? unitsOnOrder;
-
-            if (reader[unitsOnOrderColumnName] != DBNull.Value)
-            {
-                unitsOnOrder = (short)reader[unitsOnOrderColumnName];
-            }
-            else
-            {
-                unitsOnOrder = null;
-            }
-
-            const string reorderLevelColumnName = "ReorderLevel";
-            short? reorderLevel;
-
-            if (reader[reorderLevelColumnName] != DBNull.Value)
-            {
-                reorderLevel = (short)reader[reorderLevelColumnName];
-            }
-            else
-            {
-                reorderLevel = null;
-            }
-
-            const string discontinuedColumnName = "Discontinued";
-            bool discontinued = (bool)reader[discontinuedColumnName];
-
             return new ProductTransferObject
             {
-                Id = id,
-                Name = name,
-                SupplierId = supplierId,
-                CategoryId = categoryId,
-                QuantityPerUnit = quantityPerUnit,
-                UnitPrice = unitPrice,
-                UnitsInStock = unitsInStock,
-                UnitsOnOrder = unitsOnOrder,
-                ReorderLevel = reorderLevel,
-                Discontinued = discontinued,
+                Id = (int)reader["ProductID"],
+                Name = (string)reader["ProductName"],
+                SupplierId = GetValueStruct<int>("SupplierID"),
+                CategoryId = GetValueStruct<int>("CategoryID"),
+                QuantityPerUnit = GetValueClass<string>("QuantityPerUnit"),
+                UnitPrice = GetValueStruct<decimal>("UnitPrice"),
+                UnitsInStock = GetValueStruct<short>("UnitsInStock"),
+                UnitsOnOrder = GetValueStruct<short>("UnitsOnOrder"),
+                ReorderLevel = GetValueStruct<short>("ReorderLevel"),
+                Discontinued = (bool)reader["Discontinued"],
             };
+
+            T GetValueClass<T>(string text)
+                where T : class
+                => reader[text] == DBNull.Value ? null : (T)reader[text];
+
+            T? GetValueStruct<T>(string text)
+                where T : struct
+                => reader[text] == DBNull.Value ? null : (T)reader[text];
         }
 
         private static void AddSqlParameters(ProductTransferObject product, SqlCommand command)
         {
-            const string productNameParameter = "@productName";
-            command.Parameters.Add(productNameParameter, SqlDbType.NVarChar, 40);
-            command.Parameters[productNameParameter].Value = product.Name;
+            SetParameter(product.Name, "@productName", SqlDbType.NVarChar, 40, false);
+            SetParameter(product.SupplierId, "@supplierId", SqlDbType.Int);
+            SetParameter(product.CategoryId, "@categoryId", SqlDbType.Int);
+            SetParameter(product.QuantityPerUnit, "@quantityPerUnit", SqlDbType.NVarChar, 20);
+            SetParameter(product.UnitPrice, "@unitPrice", SqlDbType.Money);
+            SetParameter(product.UnitsInStock, "@unitsInStock", SqlDbType.SmallInt);
+            SetParameter(product.UnitsOnOrder, "@unitsOnOrder", SqlDbType.SmallInt);
+            SetParameter(product.ReorderLevel, "@reorderLevel", SqlDbType.SmallInt);
+            SetParameter(product.Discontinued, "@discontinued", SqlDbType.Bit, isNullable: false);
 
-            const string supplierIdParameter = "@supplierId";
-            command.Parameters.Add(supplierIdParameter, SqlDbType.Int);
-            command.Parameters[supplierIdParameter].IsNullable = true;
-
-            if (product.SupplierId != null)
+            void SetParameter<T>(T property, string parameterName, SqlDbType dbType, int? size = null, bool isNullable = true)
             {
-                command.Parameters[supplierIdParameter].Value = product.SupplierId;
-            }
-            else
-            {
-                command.Parameters[supplierIdParameter].Value = DBNull.Value;
-            }
+                if (size is null)
+                {
+                    command.Parameters.Add(parameterName, dbType);
+                }
+                else
+                {
+                    command.Parameters.Add(parameterName, dbType, (int)size);
+                }
 
-            const string categoryIdParameter = "@categoryId";
-            command.Parameters.Add(categoryIdParameter, SqlDbType.Int);
-            command.Parameters[categoryIdParameter].IsNullable = true;
-
-            if (product.CategoryId != null)
-            {
-                command.Parameters[categoryIdParameter].Value = product.CategoryId;
+                command.Parameters[parameterName].IsNullable = isNullable;
+                command.Parameters[parameterName].Value = property != null ? property : DBNull.Value;
             }
-            else
-            {
-                command.Parameters[categoryIdParameter].Value = DBNull.Value;
-            }
-
-            const string quantityPerUnitParameter = "@quantityPerUnit";
-            command.Parameters.Add(quantityPerUnitParameter, SqlDbType.NVarChar, 20);
-            command.Parameters[quantityPerUnitParameter].IsNullable = true;
-
-            if (product.QuantityPerUnit != null)
-            {
-                command.Parameters[quantityPerUnitParameter].Value = product.QuantityPerUnit;
-            }
-            else
-            {
-                command.Parameters[quantityPerUnitParameter].Value = DBNull.Value;
-            }
-
-            const string unitPriceParameter = "@unitPrice";
-            command.Parameters.Add(unitPriceParameter, SqlDbType.Money);
-            command.Parameters[unitPriceParameter].IsNullable = true;
-
-            if (product.UnitPrice != null)
-            {
-                command.Parameters[unitPriceParameter].Value = product.UnitPrice;
-            }
-            else
-            {
-                command.Parameters[unitPriceParameter].Value = DBNull.Value;
-            }
-
-            const string unitsInStockParameter = "@unitsInStock";
-            command.Parameters.Add(unitsInStockParameter, SqlDbType.SmallInt);
-            command.Parameters[unitsInStockParameter].IsNullable = true;
-
-            if (product.UnitsInStock != null)
-            {
-                command.Parameters[unitsInStockParameter].Value = product.UnitsInStock;
-            }
-            else
-            {
-                command.Parameters[unitsInStockParameter].Value = DBNull.Value;
-            }
-
-            const string unitsOnOrderParameter = "@unitsOnOrder";
-            command.Parameters.Add(unitsOnOrderParameter, SqlDbType.SmallInt);
-            command.Parameters[unitsOnOrderParameter].IsNullable = true;
-
-            if (product.UnitsOnOrder != null)
-            {
-                command.Parameters[unitsOnOrderParameter].Value = product.UnitsOnOrder;
-            }
-            else
-            {
-                command.Parameters[unitsOnOrderParameter].Value = DBNull.Value;
-            }
-
-            const string reorderLevelParameter = "@reorderLevel";
-            command.Parameters.Add(reorderLevelParameter, SqlDbType.SmallInt);
-            command.Parameters[reorderLevelParameter].IsNullable = true;
-
-            if (product.ReorderLevel != null)
-            {
-                command.Parameters[reorderLevelParameter].Value = product.ReorderLevel;
-            }
-            else
-            {
-                command.Parameters[reorderLevelParameter].Value = DBNull.Value;
-            }
-
-            const string discontinuedParameter = "@discontinued";
-            command.Parameters.Add(discontinuedParameter, SqlDbType.Bit);
-            command.Parameters[discontinuedParameter].Value = product.Discontinued;
         }
 
         private async Task<IList<ProductTransferObject>> ExecuteReader(string commandText)
