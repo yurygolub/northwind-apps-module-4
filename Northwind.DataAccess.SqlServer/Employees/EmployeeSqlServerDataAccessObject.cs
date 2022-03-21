@@ -35,12 +35,11 @@ namespace Northwind.Services.SqlServer.Employees
                 throw new ArgumentNullException(nameof(employee));
             }
 
-            const string commandText =
-@"INSERT INTO dbo.Employees (LastName, FirstName, Title, TitleOfCourtesy, BirthDate, HireDate, Address, City, Region, PostalCode, Country, HomePhone, Extension, Photo, Notes, ReportsTo, PhotoPath) OUTPUT Inserted.EmployeeID
-VALUES (@lastName, @firstName, @title, @titleOfCourtesy, @birthDate, @hireDate, @address, @city, @region, @postalCode, @country, @homePhone, @extension, @photo, @notes, @reportsTo, @photoPath)";
+            using var command = new SqlCommand("InsertEmployee", this.connection)
+            {
+                CommandType = CommandType.StoredProcedure,
+            };
 
-            using var command = new SqlCommand(commandText, this.connection);
-            
             AddSqlParameters(employee, command);
 
             var id = command.ExecuteScalar();
@@ -55,12 +54,11 @@ VALUES (@lastName, @firstName, @title, @titleOfCourtesy, @birthDate, @hireDate, 
                 throw new ArgumentException("Must be greater than zero.", nameof(employeeId));
             }
 
-            const string commandText =
-@"DELETE FROM dbo.Employees WHERE EmployeeID = @employeeID
-SELECT @@ROWCOUNT";
-
-            using var command = new SqlCommand(commandText, this.connection);
-            const string productIdParameter = "@employeeID";
+            using var command = new SqlCommand("DeleteEmployee", this.connection)
+            {
+                CommandType = CommandType.StoredProcedure,
+            };
+            const string productIdParameter = "@categoryID";
             command.Parameters.Add(productIdParameter, SqlDbType.Int);
             command.Parameters[productIdParameter].Value = employeeId;
 
@@ -76,12 +74,10 @@ SELECT @@ROWCOUNT";
                 throw new ArgumentException("Must be greater than zero.", nameof(employeeId));
             }
 
-            const string commandText =
-@"SELECT * FROM dbo.Employees as e
-WHERE e.EmployeeID = @employeeID";
-
-            using var command = new SqlCommand(commandText, this.connection);
-
+            using var command = new SqlCommand("FindEmployee", this.connection)
+            {
+                CommandType = CommandType.StoredProcedure,
+            };
             const string productIdParameter = "@employeeID";
             command.Parameters.Add(productIdParameter, SqlDbType.Int);
             command.Parameters[productIdParameter].Value = employeeId;
@@ -108,14 +104,28 @@ WHERE e.EmployeeID = @employeeID";
                 throw new ArgumentException("Must be greater than zero.", nameof(limit));
             }
 
-            const string commandTemplate =
-@"SELECT * FROM dbo.Employees as e
-ORDER BY e.EmployeeID
-OFFSET {0} ROWS
-FETCH FIRST {1} ROWS ONLY";
+            using var command = new SqlCommand("SelectEmployees", this.connection)
+            {
+                CommandType = CommandType.StoredProcedure,
+            };
 
-            string commandText = string.Format(CultureInfo.CurrentCulture, commandTemplate, offset, limit);
-            return await this.ExecuteReaderAsync(commandText);
+            const string offsetParameter = "@offset";
+            command.Parameters.Add(offsetParameter, SqlDbType.Int);
+            command.Parameters[offsetParameter].Value = offset;
+
+            const string limitParameter = "@limit";
+            command.Parameters.Add(limitParameter, SqlDbType.Int);
+            command.Parameters[limitParameter].Value = limit;
+
+            using var reader = await command.ExecuteReaderAsync();
+
+            var employees = new List<EmployeeTransferObject>();
+            while (reader.Read())
+            {
+                employees.Add(CreateEmployee(reader));
+            }
+
+            return employees;
         }
 
         /// <inheritdoc/>
@@ -126,14 +136,11 @@ FETCH FIRST {1} ROWS ONLY";
                 throw new ArgumentNullException(nameof(employee));
             }
 
-            const string commandText =
-@"UPDATE dbo.Employees
-SET LastName = @lastName, FirstName = @firstName, Title = @title, TitleOfCourtesy = @titleOfCourtesy, BirthDate = @birthDate, HireDate = @hireDate, Address = @address, City = @city, Region = @region, PostalCode = @postalCode, Country = @country, HomePhone = @homePhone, Extension = @extension, Photo = @photo, Notes = @notes, ReportsTo = @reportsTo, PhotoPath = @photoPath
-WHERE EmployeeID = @employeeID
-SELECT @@ROWCOUNT";
+            using var command = new SqlCommand("UpdateEmployee", this.connection)
+            {
+                CommandType = CommandType.StoredProcedure,
+            };
 
-            using var command = new SqlCommand(commandText, this.connection);
-            
             AddSqlParameters(employee, command);
 
             const string productId = "@employeeID";
@@ -142,7 +149,6 @@ SELECT @@ROWCOUNT";
 
             var result = command.ExecuteScalar();
             return ((int)result) > 0;
-            
         }
 
         private static EmployeeTransferObject CreateEmployee(SqlDataReader reader)

@@ -35,17 +35,15 @@ namespace Northwind.Services.SqlServer.Products
                 throw new ArgumentNullException(nameof(product));
             }
 
-            const string commandText =
-@"INSERT INTO dbo.Products (ProductName, SupplierID, CategoryID, QuantityPerUnit, UnitPrice, UnitsInStock, UnitsOnOrder, ReorderLevel, Discontinued) OUTPUT Inserted.ProductID
-VALUES (@productName, @supplierId, @categoryId, @quantityPerUnit, @unitPrice, @unitsInStock, @unitsOnOrder, @reorderLevel, @discontinued)";
-
-            using (var command = new SqlCommand(commandText, this.connection))
+            using var command = new SqlCommand("InsertProduct", this.connection)
             {
-                AddSqlParameters(product, command);
+                CommandType = CommandType.StoredProcedure,
+            };
 
-                var id = command.ExecuteScalar();
-                return (int)id;
-            }
+            AddSqlParameters(product, command);
+
+            var id = command.ExecuteScalar();
+            return (int)id;
         }
 
         /// <inheritdoc/>
@@ -56,19 +54,16 @@ VALUES (@productName, @supplierId, @categoryId, @quantityPerUnit, @unitPrice, @u
                 throw new ArgumentException("Must be greater than zero.", nameof(productId));
             }
 
-            const string commandText =
-@"DELETE FROM dbo.Products WHERE ProductID = @productID
-SELECT @@ROWCOUNT";
-
-            using (var command = new SqlCommand(commandText, this.connection))
+            using var command = new SqlCommand("DeleteProduct", this.connection)
             {
-                const string productIdParameter = "@productID";
-                command.Parameters.Add(productIdParameter, SqlDbType.Int);
-                command.Parameters[productIdParameter].Value = productId;
+                CommandType = CommandType.StoredProcedure,
+            };
+            const string productIdParameter = "@productID";
+            command.Parameters.Add(productIdParameter, SqlDbType.Int);
+            command.Parameters[productIdParameter].Value = productId;
 
-                var result = command.ExecuteScalar();
-                return ((int)result) > 0;
-            }
+            var result = command.ExecuteScalar();
+            return ((int)result) > 0;
         }
 
         /// <inheritdoc/>
@@ -79,26 +74,22 @@ SELECT @@ROWCOUNT";
                 throw new ArgumentException("Must be greater than zero.", nameof(productId));
             }
 
-            const string commandText =
-@"SELECT p.ProductID, p.ProductName, p.SupplierID, p.CategoryID, p.QuantityPerUnit, p.UnitPrice, p.UnitsInStock, p.UnitsOnOrder, p.ReorderLevel, p.Discontinued FROM dbo.Products as p
-WHERE p.ProductID = @productId";
-
-            using (var command = new SqlCommand(commandText, this.connection))
+            using var command = new SqlCommand("FindProduct", this.connection)
             {
-                const string productIdParameter = "@productId";
-                command.Parameters.Add(productIdParameter, SqlDbType.Int);
-                command.Parameters[productIdParameter].Value = productId;
+                CommandType = CommandType.StoredProcedure,
+            };
+            const string productIdParameter = "@productId";
+            command.Parameters.Add(productIdParameter, SqlDbType.Int);
+            command.Parameters[productIdParameter].Value = productId;
 
-                using (var reader = command.ExecuteReader())
-                {
-                    if (!reader.Read())
-                    {
-                        throw new ProductNotFoundException(productId);
-                    }
+            using var reader = command.ExecuteReader();
 
-                    return CreateProduct(reader);
-                }
+            if (!reader.Read())
+            {
+                throw new ProductNotFoundException(productId);
             }
+
+            return CreateProduct(reader);
         }
 
         /// <inheritdoc />
@@ -114,14 +105,28 @@ WHERE p.ProductID = @productId";
                 throw new ArgumentException("Must be greater than zero.", nameof(limit));
             }
 
-            const string commandTemplate =
-@"SELECT p.ProductID, p.ProductName, p.SupplierID, p.CategoryID, p.QuantityPerUnit, p.UnitPrice, p.UnitsInStock, p.UnitsOnOrder, p.ReorderLevel, p.Discontinued FROM dbo.Products as p
-ORDER BY p.ProductID
-OFFSET {0} ROWS
-FETCH FIRST {1} ROWS ONLY";
+            using var command = new SqlCommand("SelectProducts", this.connection)
+            {
+                CommandType = CommandType.StoredProcedure,
+            };
 
-            string commandText = string.Format(CultureInfo.CurrentCulture, commandTemplate, offset, limit);
-            return await this.ExecuteReader(commandText);
+            const string offsetParameter = "@offset";
+            command.Parameters.Add(offsetParameter, SqlDbType.Int);
+            command.Parameters[offsetParameter].Value = offset;
+
+            const string limitParameter = "@limit";
+            command.Parameters.Add(limitParameter, SqlDbType.Int);
+            command.Parameters[limitParameter].Value = limit;
+
+            using var reader = await command.ExecuteReaderAsync();
+
+            var products = new List<ProductTransferObject>();
+            while (reader.Read())
+            {
+                products.Add(CreateProduct(reader));
+            }
+
+            return products;
         }
 
         /// <inheritdoc/>
@@ -136,6 +141,7 @@ FETCH FIRST {1} ROWS ONLY";
             {
                 throw new ArgumentException("Collection is empty.", nameof(productNames));
             }
+
 
             const string commandTemplate =
 @"SELECT p.ProductID, p.ProductName, p.SupplierID, p.CategoryID, p.QuantityPerUnit, p.UnitPrice, p.UnitsInStock, p.UnitsOnOrder, p.ReorderLevel, p.Discontinued FROM dbo.Products as p
@@ -154,23 +160,19 @@ ORDER BY p.ProductID";
                 throw new ArgumentNullException(nameof(product));
             }
 
-            const string commandText =
-@"UPDATE dbo.Products
-SET ProductName = @productName, SupplierID = @supplierId, CategoryID = @categoryId, QuantityPerUnit = @quantityPerUnit, UnitPrice = @unitPrice, UnitsInStock = @unitsInStock, UnitsOnOrder = @unitsOnOrder, ReorderLevel = @reorderLevel, Discontinued = @discontinued
-WHERE ProductID = @productId
-SELECT @@ROWCOUNT";
-
-            using (var command = new SqlCommand(commandText, this.connection))
+            using var command = new SqlCommand("UpdateProduct", this.connection)
             {
-                AddSqlParameters(product, command);
+                CommandType = CommandType.StoredProcedure,
+            };
 
-                const string productId = "@productId";
-                command.Parameters.Add(productId, SqlDbType.Int);
-                command.Parameters[productId].Value = product.Id;
+            AddSqlParameters(product, command);
 
-                var result = command.ExecuteScalar();
-                return ((int)result) > 0;
-            }
+            const string productId = "@productId";
+            command.Parameters.Add(productId, SqlDbType.Int);
+            command.Parameters[productId].Value = product.Id;
+
+            var result = command.ExecuteScalar();
+            return ((int)result) > 0;
         }
 
         /// <inheritdoc/>

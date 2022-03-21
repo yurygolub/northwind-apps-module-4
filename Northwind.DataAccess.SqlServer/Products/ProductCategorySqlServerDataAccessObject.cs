@@ -34,17 +34,15 @@ namespace Northwind.Services.SqlServer.Products
                 throw new ArgumentNullException(nameof(productCategory));
             }
 
-            const string commandText =
-@"INSERT INTO dbo.Categories (CategoryName, Description, Picture) OUTPUT Inserted.CategoryID
-VALUES (@categoryName, @description, @picture)";
-
-            using (var command = new SqlCommand(commandText, this.connection))
+            using var command = new SqlCommand("InsertProductCategory", this.connection)
             {
-                AddSqlParameters(productCategory, command);
+                CommandType = CommandType.StoredProcedure,
+            };
 
-                var id = command.ExecuteScalar();
-                return (int)id;
-            }
+            AddSqlParameters(productCategory, command);
+
+            var id = command.ExecuteScalar();
+            return (int)id;
         }
 
         /// <inheritdoc/>
@@ -55,19 +53,16 @@ VALUES (@categoryName, @description, @picture)";
                 throw new ArgumentException("Must be greater than zero.", nameof(productCategoryId));
             }
 
-            const string commandText =
-@"DELETE FROM dbo.Categories WHERE CategoryID = @categoryID
-SELECT @@ROWCOUNT";
-
-            using (var command = new SqlCommand(commandText, this.connection))
+            using var command = new SqlCommand("DeleteProductCategory", this.connection)
             {
-                const string categoryId = "@categoryID";
-                command.Parameters.Add(categoryId, SqlDbType.Int);
-                command.Parameters[categoryId].Value = productCategoryId;
+                CommandType = CommandType.StoredProcedure,
+            };
+            const string productIdParameter = "@categoryID";
+            command.Parameters.Add(productIdParameter, SqlDbType.Int);
+            command.Parameters[productIdParameter].Value = productCategoryId;
 
-                var result = command.ExecuteScalar();
-                return ((int)result) > 0;
-            }
+            var result = command.ExecuteScalar();
+            return ((int)result) > 0;
         }
 
         /// <inheritdoc/>
@@ -78,26 +73,22 @@ SELECT @@ROWCOUNT";
                 throw new ArgumentException("Must be greater than zero.", nameof(productCategoryId));
             }
 
-            const string commandText =
-@"SELECT c.CategoryID, c.CategoryName, c.Description, c.Picture FROM dbo.Categories as c
-WHERE c.CategoryID = @categoryId";
-
-            using (var command = new SqlCommand(commandText, this.connection))
+            using var command = new SqlCommand("FindProductCategory", this.connection)
             {
-                const string categoryId = "@categoryId";
-                command.Parameters.Add(categoryId, SqlDbType.Int);
-                command.Parameters[categoryId].Value = productCategoryId;
+                CommandType = CommandType.StoredProcedure,
+            };
+            const string productIdParameter = "@categoryID";
+            command.Parameters.Add(productIdParameter, SqlDbType.Int);
+            command.Parameters[productIdParameter].Value = productCategoryId;
 
-                using (var reader = command.ExecuteReader())
-                {
-                    if (!reader.Read())
-                    {
-                        throw new ProductCategoryNotFoundException(productCategoryId);
-                    }
+            using var reader = command.ExecuteReader();
 
-                    return CreateProductCategory(reader);
-                }
+            if (!reader.Read())
+            {
+                throw new ProductNotFoundException(productCategoryId);
             }
+
+            return CreateProductCategory(reader);
         }
 
         /// <inheritdoc/>
@@ -113,14 +104,28 @@ WHERE c.CategoryID = @categoryId";
                 throw new ArgumentException("Must be greater than zero.", nameof(limit));
             }
 
-            const string commandTemplate =
-@"SELECT c.CategoryID, c.CategoryName, c.Description, c.Picture FROM dbo.Categories as c
-ORDER BY c.CategoryID
-OFFSET {0} ROWS
-FETCH FIRST {1} ROWS ONLY";
+            using var command = new SqlCommand("SelectProductCategories", this.connection)
+            {
+                CommandType = CommandType.StoredProcedure,
+            };
 
-            string commandText = string.Format(CultureInfo.CurrentCulture, commandTemplate, offset, limit);
-            return await this.ExecuteReaderAsync(commandText);
+            const string offsetParameter = "@offset";
+            command.Parameters.Add(offsetParameter, SqlDbType.Int);
+            command.Parameters[offsetParameter].Value = offset;
+
+            const string limitParameter = "@limit";
+            command.Parameters.Add(limitParameter, SqlDbType.Int);
+            command.Parameters[limitParameter].Value = limit;
+
+            using var reader = await command.ExecuteReaderAsync();
+
+            var productCategories = new List<ProductCategoryTransferObject>();
+            while (reader.Read())
+            {
+                productCategories.Add(CreateProductCategory(reader));
+            }
+
+            return productCategories;
         }
 
         /// <inheritdoc/>
@@ -153,22 +158,19 @@ ORDER BY c.CategoryID";
                 throw new ArgumentNullException(nameof(productCategory));
             }
 
-            const string commandText =
-@"UPDATE dbo.Categories SET CategoryName = @categoryName, Description = @description, Picture = @picture
-WHERE CategoryID = @categoryId
-SELECT @@ROWCOUNT";
-
-            using (var command = new SqlCommand(commandText, this.connection))
+            using var command = new SqlCommand("UpdateProductCategory", this.connection)
             {
-                AddSqlParameters(productCategory, command);
+                CommandType = CommandType.StoredProcedure,
+            };
 
-                const string categoryId = "@categoryId";
-                command.Parameters.Add(categoryId, SqlDbType.Int);
-                command.Parameters[categoryId].Value = productCategory.Id;
+            AddSqlParameters(productCategory, command);
 
-                var result = command.ExecuteScalar();
-                return ((int)result) > 0;
-            }
+            const string productId = "@categoryID";
+            command.Parameters.Add(productId, SqlDbType.Int);
+            command.Parameters[productId].Value = productCategory.Id;
+
+            var result = command.ExecuteScalar();
+            return ((int)result) > 0;
         }
 
         private static ProductCategoryTransferObject CreateProductCategory(SqlDataReader reader)
