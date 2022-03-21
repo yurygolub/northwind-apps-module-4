@@ -6,6 +6,8 @@ using Northwind.DataAccess;
 using Northwind.DataAccess.Products;
 using Northwind.Services.Products;
 
+#pragma warning disable S4457
+
 namespace Northwind.Services.Implementation.Products
 {
     /// <summary>

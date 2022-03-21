@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Northwind.Services.Products;
 
+#pragma warning disable SA1600
+
 namespace NorthwindApiApp.Controllers
 {
     [Route("api/products")]

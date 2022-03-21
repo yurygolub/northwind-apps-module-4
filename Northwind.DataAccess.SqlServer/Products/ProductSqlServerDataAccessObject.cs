@@ -7,6 +7,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Northwind.DataAccess.Products;
 
+#pragma warning disable S4457
+
 namespace Northwind.DataAccess.SqlServer.Products
 {
     /// <summary>

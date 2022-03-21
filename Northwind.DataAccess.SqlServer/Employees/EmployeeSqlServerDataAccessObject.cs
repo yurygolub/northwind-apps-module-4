@@ -6,6 +6,8 @@ using System.Globalization;
 using System.Threading.Tasks;
 using Northwind.DataAccess.Employees;
 
+#pragma warning disable S4457
+
 namespace Northwind.DataAccess.SqlServer.Employees
 {
     /// <summary>

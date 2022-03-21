@@ -11,6 +11,8 @@ using Northwind.Services.Implementation.Employees;
 using Northwind.Services.Implementation.Products;
 using Northwind.Services.Products;
 
+#pragma warning disable SA1600
+
 namespace NorthwindApiApp
 {
     public class Startup
@@ -21,6 +23,21 @@ namespace NorthwindApiApp
         }
 
         public IConfiguration Configuration { get; }
+
+        public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+
+            app.UseRouting();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
+        }
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -37,21 +54,6 @@ namespace NorthwindApiApp
                 })
                 .AddTransient<NorthwindDataAccessFactory, SqlServerDataAccessFactory>()
                 .AddControllers();
-        }
-
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
-            app.UseRouting();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
         }
     }
 }
