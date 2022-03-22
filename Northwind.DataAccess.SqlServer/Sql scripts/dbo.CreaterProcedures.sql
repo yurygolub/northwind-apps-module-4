@@ -1,14 +1,14 @@
 ﻿GO
 CREATE PROCEDURE [dbo].[InsertProduct]
-	@productName nvarchar,
-	@supplierId int,
-	@categoryId int,
-	@quantityPerUnit nvarchar,
-	@unitPrice money,
-	@unitsInStock smallint,
-	@unitsOnOrder smallint,
-	@reorderLevel smallint,
-	@discontinued bit
+    @productName     NVARCHAR (40),
+    @supplierId      INT,
+    @categoryId      INT,
+    @quantityPerUnit NVARCHAR (20),
+    @unitPrice       MONEY,
+    @unitsInStock    SMALLINT,
+    @unitsOnOrder    SMALLINT,
+    @reorderLevel    SMALLINT,
+    @discontinued    BIT
 AS
 	INSERT INTO dbo.Products (ProductName, SupplierID, CategoryID, QuantityPerUnit, UnitPrice, UnitsInStock, UnitsOnOrder, ReorderLevel, Discontinued)
     OUTPUT Inserted.ProductID
@@ -40,15 +40,15 @@ AS
 GO
 CREATE PROCEDURE [dbo].[UpdateProduct]
 	@productId int,
-	@productName nvarchar,
-	@supplierId int,
-	@categoryId int,
-	@quantityPerUnit nvarchar,
-	@unitPrice money,
-	@unitsInStock smallint,
-	@unitsOnOrder smallint,
-	@reorderLevel smallint,
-	@discontinued bit
+    @productName     NVARCHAR (40),
+    @supplierId      INT,
+    @categoryId      INT,
+    @quantityPerUnit NVARCHAR (20),
+    @unitPrice       MONEY,
+    @unitsInStock    SMALLINT,
+    @unitsOnOrder    SMALLINT,
+    @reorderLevel    SMALLINT,
+    @discontinued    BIT
 AS
 	UPDATE dbo.Products
 	SET
@@ -66,7 +66,7 @@ AS
 
 GO
 CREATE PROCEDURE [dbo].[InsertProductCategory]
-	@categoryName nvarchar,
+	@categoryName nvarchar (15),
 	@description ntext,
 	@picture image
 AS
@@ -102,7 +102,7 @@ AS
 GO
 CREATE PROCEDURE [dbo].[UpdateProductCategory]
 	@categoryId int,
-	@categoryName nvarchar,
+	@categoryName nvarchar (15),
 	@description ntext,
 	@picture image
 AS
@@ -112,23 +112,23 @@ AS
     
 GO
 CREATE PROCEDURE [dbo].[InsertEmployee]
-    @lastName        NVARCHAR,
-    @firstName       NVARCHAR,
-    @title           NVARCHAR,
-    @titleOfCourtesy NVARCHAR,
+    @lastName        NVARCHAR (20),
+    @firstName       NVARCHAR (10),
+    @title           NVARCHAR (30),
+    @titleOfCourtesy NVARCHAR (25),
     @birthDate       DATETIME,
     @hireDate        DATETIME,
-    @address         NVARCHAR,
-    @city            NVARCHAR,
-    @region          NVARCHAR,
-    @postalCode      NVARCHAR,
-    @country         NVARCHAR,
-    @homePhone       NVARCHAR,
-    @extension       NVARCHAR,
+    @address         NVARCHAR (60),
+    @city            NVARCHAR (15),
+    @region          NVARCHAR (15),
+    @postalCode      NVARCHAR (10),
+    @country         NVARCHAR (15),
+    @homePhone       NVARCHAR (24),
+    @extension       NVARCHAR (4),
     @photo           IMAGE,
     @notes           NTEXT,
     @reportsTo       INT,
-    @photoPath       NVARCHAR
+    @photoPath       NVARCHAR (255)
 AS
 	INSERT INTO dbo.Employees (LastName, FirstName, Title, TitleOfCourtesy, BirthDate, HireDate, Address, City, Region, PostalCode, Country, HomePhone, Extension, Photo, Notes, ReportsTo, PhotoPath) OUTPUT Inserted.EmployeeID
     VALUES (@lastName, @firstName, @title, @titleOfCourtesy, @birthDate, @hireDate, @address, @city, @region, @postalCode, @country, @homePhone, @extension, @photo, @notes, @reportsTo, @photoPath)
@@ -161,23 +161,23 @@ AS
 GO
 CREATE PROCEDURE [dbo].[UpdateEmployee]
 	@employeeID int,
-    @lastName        NVARCHAR,
-    @firstName       NVARCHAR,
-    @title           NVARCHAR,
-    @titleOfCourtesy NVARCHAR,
+    @lastName        NVARCHAR (20),
+    @firstName       NVARCHAR (10),
+    @title           NVARCHAR (30),
+    @titleOfCourtesy NVARCHAR (25),
     @birthDate       DATETIME,
     @hireDate        DATETIME,
-    @address         NVARCHAR,
-    @city            NVARCHAR,
-    @region          NVARCHAR,
-    @postalCode      NVARCHAR,
-    @country         NVARCHAR,
-    @homePhone       NVARCHAR,
-    @extension       NVARCHAR,
+    @address         NVARCHAR (60),
+    @city            NVARCHAR (15),
+    @region          NVARCHAR (15),
+    @postalCode      NVARCHAR (10),
+    @country         NVARCHAR (15),
+    @homePhone       NVARCHAR (24),
+    @extension       NVARCHAR (4),
     @photo           IMAGE,
     @notes           NTEXT,
     @reportsTo       INT,
-    @photoPath       NVARCHAR
+    @photoPath       NVARCHAR (255)
 AS
 	UPDATE dbo.Employees
     SET
