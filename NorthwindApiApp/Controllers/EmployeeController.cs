@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Northwind.Services.Employees;
 
 #pragma warning disable SA1600
@@ -17,9 +16,9 @@ namespace NorthwindApiApp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetEmployees()
+        public IActionResult GetEmployees()
         {
-            return this.Ok(await this.managementService.ShowEmployeesAsync(0, 100));
+            return this.Ok(this.managementService.GetEmployeesAsync(0, 100));
         }
 
         [HttpGet("{id}")]

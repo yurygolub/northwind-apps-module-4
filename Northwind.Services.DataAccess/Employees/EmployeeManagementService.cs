@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Northwind.Services.Employees;
 
 namespace Northwind.Services.DataAccess.Employees
@@ -50,12 +48,13 @@ namespace Northwind.Services.DataAccess.Employees
         }
 
         /// <inheritdoc/>
-        public async Task<IList<Employee>> ShowEmployeesAsync(int offset, int limit)
+        public async IAsyncEnumerable<Employee> GetEmployeesAsync(int offset, int limit)
         {
-            var employees = await this.dataAccessObject.SelectEmployeesAsync(offset, limit);
-            return employees
-                .Select(e => MapEmployee(e))
-                .ToList();
+            var employees = this.dataAccessObject.SelectEmployeesAsync(offset, limit);
+            await foreach (var employee in employees)
+            {
+                yield return MapEmployee(employee);
+            }
         }
 
         /// <inheritdoc/>

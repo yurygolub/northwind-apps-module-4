@@ -49,7 +49,6 @@ namespace NorthwindApiApp
                 .AddTransient<IProductManagementService, EntityFramework.Products.ProductManagementService>()
                 .AddTransient<IProductCategoryManagementService, EntityFramework.Products.ProductCategoryManagementService>()
                 .AddTransient<IEmployeeManagementService, EntityFramework.Employees.EmployeeManagementService>()
-
                 .AddScoped(s =>
                 {
                     string connecionString = this.Configuration.GetConnectionString("SqlConnection");

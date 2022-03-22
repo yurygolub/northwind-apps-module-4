@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Globalization;
-using System.Threading.Tasks;
 using Northwind.Services.Employees;
 
 #pragma warning disable S4457
@@ -92,7 +90,7 @@ namespace Northwind.Services.SqlServer.Employees
         }
 
         /// <inheritdoc/>
-        public async Task<IList<EmployeeTransferObject>> SelectEmployeesAsync(int offset, int limit)
+        public async IAsyncEnumerable<EmployeeTransferObject> SelectEmployeesAsync(int offset, int limit)
         {
             if (offset < 0)
             {
@@ -117,15 +115,12 @@ namespace Northwind.Services.SqlServer.Employees
             command.Parameters.Add(limitParameter, SqlDbType.Int);
             command.Parameters[limitParameter].Value = limit;
 
-            using var reader = await command.ExecuteReaderAsync();
+            await using var reader = await command.ExecuteReaderAsync();
 
-            var employees = new List<EmployeeTransferObject>();
             while (reader.Read())
             {
-                employees.Add(CreateEmployee(reader));
+                yield return CreateEmployee(reader);
             }
-
-            return employees;
         }
 
         /// <inheritdoc/>
@@ -218,20 +213,6 @@ namespace Northwind.Services.SqlServer.Employees
                 command.Parameters[parameterName].IsNullable = isNullable;
                 command.Parameters[parameterName].Value = property != null ? property : DBNull.Value;
             }
-        }
-
-        private async Task<IList<EmployeeTransferObject>> ExecuteReaderAsync(string commandText)
-        {
-            var employees = new List<EmployeeTransferObject>();
-
-            await using var command = new SqlCommand(commandText, this.connection);
-            await using var reader = await command.ExecuteReaderAsync();
-            while (reader.Read())
-            {
-                employees.Add(CreateEmployee(reader));
-            }
-
-            return employees;
         }
     }
 }

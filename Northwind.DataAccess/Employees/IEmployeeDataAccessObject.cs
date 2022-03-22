@@ -41,7 +41,7 @@ namespace Northwind.Services.Employees
         /// </summary>
         /// <param name="offset">An offset of the first object.</param>
         /// <param name="limit">A limit of returned objects.</param>
-        /// <returns>An <see cref="List{T}"/> of <see cref="EmployeeTransferObject"/>.</returns>
-        Task<IList<EmployeeTransferObject>> SelectEmployeesAsync(int offset, int limit);
+        /// <returns>An <see cref="IAsyncEnumerable{T}"/> of <see cref="EmployeeTransferObject"/>.</returns>
+        IAsyncEnumerable<EmployeeTransferObject> SelectEmployeesAsync(int offset, int limit);
     }
 }

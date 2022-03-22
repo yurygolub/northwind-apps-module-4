@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Northwind.Services.Products;
 
 #pragma warning disable S4457
@@ -52,35 +50,38 @@ namespace Northwind.Services.DataAccess.Products
         }
 
         /// <inheritdoc/>
-        public async Task<IList<Product>> LookupProductsByNameAsync(IList<string> names)
+        public async IAsyncEnumerable<Product> GetProductsByNameAsync(IEnumerable<string> names)
         {
             if (names is null)
             {
                 throw new ArgumentNullException(nameof(names));
             }
 
-            var products = await this.dataAccessObject.SelectProductsByName(names);
-            return products
-                .Select(p => MapProduct(p))
-                .ToList();
+            var products = this.dataAccessObject.SelectProductsByName(names);
+            await foreach (var product in products)
+            {
+                yield return MapProduct(product);
+            }
         }
 
         /// <inheritdoc/>
-        public async Task<IList<Product>> ShowProductsAsync(int offset, int limit)
+        public async IAsyncEnumerable<Product> GetProductsAsync(int offset, int limit)
         {
-            var products = await this.dataAccessObject.SelectProducts(offset, limit);
-            return products
-                .Select(p => MapProduct(p))
-                .ToList();
+            var products = this.dataAccessObject.SelectProducts(offset, limit);
+            await foreach (var product in products)
+            {
+                yield return MapProduct(product);
+            }
         }
 
         /// <inheritdoc/>
-        public async Task<IList<Product>> ShowProductsForCategoryAsync(int categoryId)
+        public async IAsyncEnumerable<Product> GetProductsForCategoryAsync(int categoryId)
         {
-            var products = await this.dataAccessObject.SelectProductByCategory(new[] { categoryId });
-            return products
-                .Select(p => MapProduct(p))
-                .ToList();
+            var products = this.dataAccessObject.SelectProductByCategory(new[] { categoryId });
+            await foreach (var product in products)
+            {
+                yield return MapProduct(product);
+            }
         }
 
         /// <inheritdoc/>

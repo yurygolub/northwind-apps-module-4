@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Northwind.Services.Products;
 
 #pragma warning disable SA1600
@@ -17,9 +16,9 @@ namespace NorthwindApiApp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetProductCategories()
+        public IActionResult GetProductCategories()
         {
-            return this.Ok(await this.managementService.ShowCategoriesAsync(0, 100));
+            return this.Ok(this.managementService.GetCategoriesAsync(0, 100));
         }
 
         [HttpGet("{id}")]

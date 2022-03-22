@@ -4,7 +4,6 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Globalization;
 using System.Linq;
-using System.Threading.Tasks;
 using Northwind.Services.Products;
 
 #pragma warning disable S4457
@@ -93,7 +92,7 @@ namespace Northwind.Services.SqlServer.Products
         }
 
         /// <inheritdoc />
-        public async Task<IList<ProductTransferObject>> SelectProducts(int offset, int limit)
+        public async IAsyncEnumerable<ProductTransferObject> SelectProducts(int offset, int limit)
         {
             if (offset < 0)
             {
@@ -105,7 +104,7 @@ namespace Northwind.Services.SqlServer.Products
                 throw new ArgumentException("Must be greater than zero.", nameof(limit));
             }
 
-            using var command = new SqlCommand("SelectProducts", this.connection)
+            await using var command = new SqlCommand("SelectProducts", this.connection)
             {
                 CommandType = CommandType.StoredProcedure,
             };
@@ -118,26 +117,23 @@ namespace Northwind.Services.SqlServer.Products
             command.Parameters.Add(limitParameter, SqlDbType.Int);
             command.Parameters[limitParameter].Value = limit;
 
-            using var reader = await command.ExecuteReaderAsync();
+            await using var reader = await command.ExecuteReaderAsync();
 
-            var products = new List<ProductTransferObject>();
             while (reader.Read())
             {
-                products.Add(CreateProduct(reader));
+                yield return CreateProduct(reader);
             }
-
-            return products;
         }
 
         /// <inheritdoc/>
-        public async Task<IList<ProductTransferObject>> SelectProductsByName(ICollection<string> productNames)
+        public async IAsyncEnumerable<ProductTransferObject> SelectProductsByName(IEnumerable<string> productNames)
         {
             if (productNames == null)
             {
                 throw new ArgumentNullException(nameof(productNames));
             }
 
-            if (productNames.Count < 1)
+            if (productNames.Any())
             {
                 throw new ArgumentException("Collection is empty.", nameof(productNames));
             }
@@ -149,7 +145,12 @@ WHERE p.ProductName in ('{0}')
 ORDER BY p.ProductID";
 
             string commandText = string.Format(CultureInfo.CurrentCulture, commandTemplate, string.Join("', '", productNames));
-            return await this.ExecuteReader(commandText);
+            var products = this.ExecuteReaderAsync(commandText);
+
+            await foreach (var product in products)
+            {
+                yield return product;
+            }
         }
 
         /// <inheritdoc/>
@@ -176,7 +177,7 @@ ORDER BY p.ProductID";
         }
 
         /// <inheritdoc/>
-        public async Task<IList<ProductTransferObject>> SelectProductByCategory(ICollection<int> collectionOfCategoryId)
+        public async IAsyncEnumerable<ProductTransferObject> SelectProductByCategory(IEnumerable<int> collectionOfCategoryId)
         {
             if (collectionOfCategoryId == null)
             {
@@ -192,16 +193,13 @@ WHERE p.CategoryID in ('{0}')";
 
             string commandText = string.Format(CultureInfo.InvariantCulture, commandTemplate, whereInClause);
 
-            var products = new List<ProductTransferObject>();
             await using var command = new SqlCommand(commandText, this.connection);
             await using var reader = await command.ExecuteReaderAsync();
             
             while (reader.Read())
             {
-                products.Add(CreateProduct(reader));
+                yield return CreateProduct(reader);
             }
-            
-            return products;
         }
 
         private static ProductTransferObject CreateProduct(SqlDataReader reader)
@@ -257,18 +255,15 @@ WHERE p.CategoryID in ('{0}')";
             }
         }
 
-        private async Task<IList<ProductTransferObject>> ExecuteReader(string commandText)
+        private async IAsyncEnumerable<ProductTransferObject> ExecuteReaderAsync(string commandText)
         {
-            var products = new List<ProductTransferObject>();
-            using var command = new SqlCommand(commandText, this.connection);
-            using var reader = await command.ExecuteReaderAsync();
+            await using var command = new SqlCommand(commandText, this.connection);
+            await using var reader = await command.ExecuteReaderAsync();
 
             while (reader.Read())
             {
-                products.Add(CreateProduct(reader));
+                yield return CreateProduct(reader);
             }
-            
-            return products;
         }
     }
 }

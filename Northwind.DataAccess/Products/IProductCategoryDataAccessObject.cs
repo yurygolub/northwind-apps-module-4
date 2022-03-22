@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Northwind.Services.Products
 {
@@ -41,14 +40,14 @@ namespace Northwind.Services.Products
         /// </summary>
         /// <param name="offset">An offset of the first object.</param>
         /// <param name="limit">A limit of returned objects.</param>
-        /// <returns>A <see cref="List{T}"/> of <see cref="ProductCategoryTransferObject"/>.</returns>
-        Task<IList<ProductCategoryTransferObject>> SelectProductCategoriesAsync(int offset, int limit);
+        /// <returns>A <see cref="IAsyncEnumerable{T}"/> of <see cref="ProductCategoryTransferObject"/>.</returns>
+        IAsyncEnumerable<ProductCategoryTransferObject> SelectProductCategoriesAsync(int offset, int limit);
 
         /// <summary>
         /// Selects all Northwind product categories with specified names.
         /// </summary>
-        /// <param name="productCategoryNames">A <see cref="ICollection{T}"/> of product category names.</param>
-        /// <returns>A <see cref="List{T}"/> of <see cref="ProductCategoryTransferObject"/>.</returns>
-        Task<IList<ProductCategoryTransferObject>> SelectProductCategoriesByNameAsync(ICollection<string> productCategoryNames);
+        /// <param name="productCategoryNames">A <see cref="IEnumerable{T}"/> of product category names.</param>
+        /// <returns>A <see cref="IAsyncEnumerable{T}"/> of <see cref="ProductCategoryTransferObject"/>.</returns>
+        IAsyncEnumerable<ProductCategoryTransferObject> SelectProductCategoriesByNameAsync(IEnumerable<string> productCategoryNames);
     }
 }

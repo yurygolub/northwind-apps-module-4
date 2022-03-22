@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Globalization;
-using System.Threading.Tasks;
+using System.Linq;
 using Northwind.Services.Products;
 
 #pragma warning disable S4457
@@ -92,7 +92,7 @@ namespace Northwind.Services.SqlServer.Products
         }
 
         /// <inheritdoc/>
-        public async Task<IList<ProductCategoryTransferObject>> SelectProductCategoriesAsync(int offset, int limit)
+        public async IAsyncEnumerable<ProductCategoryTransferObject> SelectProductCategoriesAsync(int offset, int limit)
         {
             if (offset < 0)
             {
@@ -104,7 +104,7 @@ namespace Northwind.Services.SqlServer.Products
                 throw new ArgumentException("Must be greater than zero.", nameof(limit));
             }
 
-            using var command = new SqlCommand("SelectProductCategories", this.connection)
+            await using var command = new SqlCommand("SelectProductCategories", this.connection)
             {
                 CommandType = CommandType.StoredProcedure,
             };
@@ -117,26 +117,23 @@ namespace Northwind.Services.SqlServer.Products
             command.Parameters.Add(limitParameter, SqlDbType.Int);
             command.Parameters[limitParameter].Value = limit;
 
-            using var reader = await command.ExecuteReaderAsync();
+            await using var reader = await command.ExecuteReaderAsync();
 
-            var productCategories = new List<ProductCategoryTransferObject>();
             while (reader.Read())
             {
-                productCategories.Add(CreateProductCategory(reader));
+                yield return CreateProductCategory(reader);
             }
-
-            return productCategories;
         }
 
         /// <inheritdoc/>
-        public async Task<IList<ProductCategoryTransferObject>> SelectProductCategoriesByNameAsync(ICollection<string> productCategoryNames)
+        public async IAsyncEnumerable<ProductCategoryTransferObject> SelectProductCategoriesByNameAsync(IEnumerable<string> productCategoryNames)
         {
             if (productCategoryNames == null)
             {
                 throw new ArgumentNullException(nameof(productCategoryNames));
             }
 
-            if (productCategoryNames.Count < 1)
+            if (productCategoryNames.Any())
             {
                 throw new ArgumentException("Collection is empty.", nameof(productCategoryNames));
             }
@@ -147,7 +144,13 @@ WHERE c.CategoryName in ('{0}')
 ORDER BY c.CategoryID";
 
             string commandText = string.Format(CultureInfo.CurrentCulture, commandTemplate, string.Join("', '", productCategoryNames));
-            return await this.ExecuteReaderAsync(commandText);
+
+            var productCategories = this.ExecuteReaderAsync(commandText);
+
+            await foreach (var productCategory in productCategories)
+            {
+                yield return productCategory;
+            }
         }
 
         /// <inheritdoc/>
@@ -210,18 +213,15 @@ ORDER BY c.CategoryID";
             }
         }
 
-        private async Task<IList<ProductCategoryTransferObject>> ExecuteReaderAsync(string commandText)
+        private async IAsyncEnumerable<ProductCategoryTransferObject> ExecuteReaderAsync(string commandText)
         {
-            var productCategories = new List<ProductCategoryTransferObject>();
-            using var command = new SqlCommand(commandText, this.connection);
-            using var reader = await command.ExecuteReaderAsync();
+            await using var command = new SqlCommand(commandText, this.connection);
+            await using var reader = await command.ExecuteReaderAsync();
             
             while (reader.Read())
             {
-                productCategories.Add(CreateProductCategory(reader));
+                yield return CreateProductCategory(reader);
             }
-
-            return productCategories;
         }
     }
 }

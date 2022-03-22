@@ -41,21 +41,21 @@ namespace Northwind.Services.Products
         /// </summary>
         /// <param name="offset">An offset of the first object.</param>
         /// <param name="limit">A limit of returned objects.</param>
-        /// <returns>A <see cref="List{T}"/> of <see cref="ProductTransferObject"/>.</returns>
-        Task<IList<ProductTransferObject>> SelectProducts(int offset, int limit);
+        /// <returns>A <see cref="IAsyncEnumerable{T}"/> of <see cref="ProductTransferObject"/>.</returns>
+        IAsyncEnumerable<ProductTransferObject> SelectProducts(int offset, int limit);
 
         /// <summary>
         /// Selects all Northwind products with specified names.
         /// </summary>
         /// <param name="productNames">A <see cref="IEnumerable{T}"/> of product names.</param>
         /// <returns>A <see cref="List{T}"/> of <see cref="ProductTransferObject"/>.</returns>
-        Task<IList<ProductTransferObject>> SelectProductsByName(ICollection<string> productNames);
+        IAsyncEnumerable<ProductTransferObject> SelectProductsByName(IEnumerable<string> productNames);
 
         /// <summary>
         /// Selects all Northwind products that belongs to specified categories.
         /// </summary>
-        /// <param name="collectionOfCategoryId">A <see cref="ICollection{T}"/> of category id.</param>
+        /// <param name="collectionOfCategoryId">A <see cref="IEnumerable{T}"/> of category id.</param>
         /// <returns>A <see cref="IList{T}"/> of <see cref="ProductTransferObject"/>.</returns>
-        Task<IList<ProductTransferObject>> SelectProductByCategory(ICollection<int> collectionOfCategoryId);
+        IAsyncEnumerable<ProductTransferObject> SelectProductByCategory(IEnumerable<int> collectionOfCategoryId);
     }
 }

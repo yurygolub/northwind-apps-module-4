@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Northwind.Services.Products;
 
 #pragma warning disable S4457
@@ -52,26 +50,28 @@ namespace Northwind.Services.DataAccess.Products
         }
 
         /// <inheritdoc/>
-        public async Task<IList<ProductCategory>> LookupCategoriesByNameAsync(IList<string> names)
+        public async IAsyncEnumerable<ProductCategory> GetCategoriesByNameAsync(IEnumerable<string> names)
         {
             if (names is null)
             {
                 throw new ArgumentNullException(nameof(names));
             }
 
-            var productCategories = await this.dataAccessObject.SelectProductCategoriesByNameAsync(names);
-            return productCategories
-                .Select(p => MapProductCategory(p))
-                .ToList();
+            var productCategories = this.dataAccessObject.SelectProductCategoriesByNameAsync(names);
+            await foreach (var productCategory in productCategories)
+            {
+                yield return MapProductCategory(productCategory);
+            }
         }
 
         /// <inheritdoc/>
-        public async Task<IList<ProductCategory>> ShowCategoriesAsync(int offset, int limit)
+        public async IAsyncEnumerable<ProductCategory> GetCategoriesAsync(int offset, int limit)
         {
-            var productCategories = await this.dataAccessObject.SelectProductCategoriesAsync(offset, limit);
-            return productCategories
-                .Select(p => MapProductCategory(p))
-                .ToList();
+            var productCategories = this.dataAccessObject.SelectProductCategoriesAsync(offset, limit);
+            await foreach (var productCategory in productCategories)
+            {
+                yield return MapProductCategory(productCategory);
+            }
         }
 
         /// <inheritdoc/>

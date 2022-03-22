@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Northwind.Services.Employees
 {
@@ -13,8 +12,8 @@ namespace Northwind.Services.Employees
         /// </summary>
         /// <param name="offset">An offset of the first element to return.</param>
         /// <param name="limit">A limit of elements to return.</param>
-        /// <returns>A <see cref="IList{T}"/> of <see cref="Product"/>.</returns>
-        Task<IList<Employee>> ShowEmployeesAsync(int offset, int limit);
+        /// <returns>A <see cref="IAsyncEnumerable{T}"/> of <see cref="Employee"/>.</returns>
+        IAsyncEnumerable<Employee> GetEmployeesAsync(int offset, int limit);
 
         /// <summary>
         /// Try to show a employee with specified identifier.

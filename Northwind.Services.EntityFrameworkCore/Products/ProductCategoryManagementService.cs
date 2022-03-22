@@ -52,40 +52,46 @@ namespace Northwind.Services.EntityFrameworkCore.Products
             return false;
         }
 
-        public async Task<IList<ProductCategory>> LookupCategoriesByNameAsync(IList<string> names)
+        public async IAsyncEnumerable<ProductCategory> GetCategoriesByNameAsync(IEnumerable<string> names)
         {
             if (names is null)
             {
                 throw new ArgumentNullException(nameof(names));
             }
 
-            using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
+            await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
 
-            return await Task.Run(() => LookupCategoriesByName(db, names));
-
-            static IList<ProductCategory> LookupCategoriesByName(Context.NorthwindContext db, IList<string> names)
+            var categories = await Task.Run(() => GetCategoriesByName(db, names));
+            foreach (var category in categories)
             {
-                return (from category in db.Categories
+                yield return category;
+            }
+
+            static IEnumerable<ProductCategory> GetCategoriesByName(Context.NorthwindContext db, IEnumerable<string> names)
+            {
+                return from category in db.Categories
                         from name in names
                         where category.CategoryName == name
-                        select MapProductCategory(category))
-                            .ToList();
+                        select MapProductCategory(category);
             }
         }
 
-        public async Task<IList<ProductCategory>> ShowCategoriesAsync(int offset, int limit)
+        public async IAsyncEnumerable<ProductCategory> GetCategoriesAsync(int offset, int limit)
         {
-            using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
+            await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
 
-            return await Task.Run(() => ShowCategories(db, offset, limit));
+            var categories = await Task.Run(() => ShowCategories(db, offset, limit));
+            foreach (var category in categories)
+            {
+                yield return category;
+            }
 
-            static IList<ProductCategory> ShowCategories(Context.NorthwindContext db, int offset, int limit)
+            static IEnumerable<ProductCategory> ShowCategories(Context.NorthwindContext db, int offset, int limit)
             {
                 return db.Categories
                     .Skip(offset)
                     .Take(limit)
-                    .Select(c => MapProductCategory(c))
-                    .ToList();
+                    .Select(c => MapProductCategory(c));
             }
         }
 

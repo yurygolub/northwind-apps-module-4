@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Northwind.Services.Products
 {
@@ -13,8 +12,8 @@ namespace Northwind.Services.Products
         /// </summary>
         /// <param name="offset">An offset of the first element to return.</param>
         /// <param name="limit">A limit of elements to return.</param>
-        /// <returns>A <see cref="IList{T}"/> of <see cref="Product"/>.</returns>
-        Task<IList<Product>> ShowProductsAsync(int offset, int limit);
+        /// <returns>A <see cref="IAsyncEnumerable{T}"/> of <see cref="Product"/>.</returns>
+        IAsyncEnumerable<Product> GetProductsAsync(int offset, int limit);
 
         /// <summary>
         /// Try to show a product with specified identifier.
@@ -43,7 +42,7 @@ namespace Northwind.Services.Products
         /// </summary>
         /// <param name="names">A list of product names.</param>
         /// <returns>A list of products with specified names.</returns>
-        Task<IList<Product>> LookupProductsByNameAsync(IList<string> names);
+        IAsyncEnumerable<Product> GetProductsByNameAsync(IEnumerable<string> names);
 
         /// <summary>
         /// Updates a product.
@@ -57,7 +56,7 @@ namespace Northwind.Services.Products
         /// Shows a list of products that belongs to a specified category.
         /// </summary>
         /// <param name="categoryId">A product category identifier.</param>
-        /// <returns>A <see cref="IList{T}"/> of <see cref="Product"/>.</returns>
-        Task<IList<Product>> ShowProductsForCategoryAsync(int categoryId);
+        /// <returns>A <see cref="IAsyncEnumerable{T}"/> of <see cref="Product"/>.</returns>
+        IAsyncEnumerable<Product> GetProductsForCategoryAsync(int categoryId);
     }
 }

@@ -55,19 +55,21 @@ namespace Northwind.Services.EntityFrameworkCore.Employees
             return false;
         }
 
-        public async Task<IList<Employee>> ShowEmployeesAsync(int offset, int limit)
+        public async IAsyncEnumerable<Employee> GetEmployeesAsync(int offset, int limit)
         {
-            using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
+            await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
+            var employees = await Task.Run(() => GetEmployees(db, offset, limit));
+            foreach (var employee in employees)
+            {
+                yield return employee;
+            }
 
-            return await Task.Run(() => ShowEmployees(db, offset, limit));
-
-            static IList<Employee> ShowEmployees(Context.NorthwindContext db, int offset, int limit)
+            static IEnumerable<Employee> GetEmployees(Context.NorthwindContext db, int offset, int limit)
             {
                 return db.Employees
                     .Skip(offset)
                     .Take(limit)
-                    .Select(e => MapEmployee(e))
-                    .ToList();
+                    .Select(e => MapEmployee(e));
             }
         }
 
