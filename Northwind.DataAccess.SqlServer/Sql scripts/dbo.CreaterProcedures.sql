@@ -38,6 +38,22 @@ AS
     FETCH FIRST @limit ROWS ONLY
 
 GO
+CREATE PROCEDURE [dbo].[SelectProductsByName]
+	@productName NVARCHAR (40)
+AS
+	SELECT * FROM dbo.Products as p
+	WHERE p.ProductName = @productName
+	ORDER BY p.ProductID
+
+GO
+CREATE PROCEDURE [dbo].[SelectProductsByCategory]
+	@categoryId int
+AS
+	SELECT * FROM dbo.Products as p
+	WHERE p.CategoryID = @categoryId
+	ORDER BY p.ProductID
+
+GO
 CREATE PROCEDURE [dbo].[UpdateProduct]
 	@productId int,
     @productName     NVARCHAR (40),
@@ -98,7 +114,15 @@ AS
     ORDER BY c.CategoryID
     OFFSET @offset ROWS
     FETCH FIRST @limit ROWS ONLY
-    
+
+GO    
+CREATE PROCEDURE [dbo].[SelectProductCategoriesByName]
+	@categoryName NVARCHAR (15)
+AS
+	SELECT * FROM dbo.Categories as c
+	WHERE c.CategoryName = @categoryName
+	ORDER BY c.CategoryID
+
 GO
 CREATE PROCEDURE [dbo].[UpdateProductCategory]
 	@categoryId int,
