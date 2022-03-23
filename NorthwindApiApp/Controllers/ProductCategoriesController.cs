@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Northwind.Services.Products;
 
 #pragma warning disable SA1600
 
 namespace NorthwindApiApp.Controllers
 {
+    [ApiController]
     [Route("api/categories")]
     public class ProductCategoriesController : ControllerBase
     {
@@ -16,15 +18,16 @@ namespace NorthwindApiApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetProductCategories()
+        public IActionResult GetProductCategories([FromQuery] int offset = 0, [FromQuery] int limit = 10)
         {
-            return this.Ok(this.managementService.GetCategoriesAsync(0, 100));
+            return this.Ok(this.managementService.GetCategoriesAsync(offset, limit));
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetProductCategory(int id)
+        public async Task<IActionResult> GetProductCategoryAsync(int id)
         {
-            if (!this.managementService.TryShowCategory(id, out ProductCategory productCategory))
+            var productCategory = await this.managementService.GetCategoryAsync(id);
+            if (productCategory is null)
             {
                 return this.NotFound();
             }
@@ -33,17 +36,16 @@ namespace NorthwindApiApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateProductCategory([FromBody] ProductCategory productCategory)
+        public async Task<IActionResult> CreateProductCategoryAsync([FromBody] ProductCategory productCategory)
         {
-            this.managementService.CreateCategory(productCategory);
-
+            await this.managementService.CreateCategoryAsync(productCategory);
             return this.Ok();
         }
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteProductCategory(int id)
+        public async Task<IActionResult> DeleteProductCategoryAsync(int id)
         {
-            if (!this.managementService.DestroyCategory(id))
+            if (!await this.managementService.DestroyCategoryAsync(id))
             {
                 return this.NotFound();
             }
@@ -52,9 +54,9 @@ namespace NorthwindApiApp.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult UpdateProductCategory(int id, [FromBody] ProductCategory productCategory)
+        public async Task<IActionResult> UpdateProductCategoryAsync(int id, [FromBody] ProductCategory productCategory)
         {
-            if (!this.managementService.UpdateCategory(id, productCategory))
+            if (!await this.managementService.UpdateCategoryAsync(id, productCategory))
             {
                 return this.NotFound();
             }

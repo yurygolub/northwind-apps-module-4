@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Northwind.Services.Products;
 using Context = Northwind.Services.EntityFrameworkCore.Models;
 
@@ -24,28 +25,28 @@ namespace Northwind.Services.EntityFrameworkCore.Products
             this.connectionString = connectionString;
         }
 
-        public int CreateProduct(Product product)
+        public async Task<int> CreateProductAsync(Product product)
         {
             if (product is null)
             {
                 throw new ArgumentNullException(nameof(product));
             }
 
-            using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
-            db.Products.Add(MapProduct(product));
-            db.SaveChanges();
+            await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
+            await db.Products.AddAsync(MapProduct(product));
+            await db.SaveChangesAsync();
             return product.Id;
         }
 
-        public bool DestroyProduct(int productId)
+        public async Task<bool> DestroyProductAsync(int productId)
         {
-            using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
+            await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
 
-            var product = db.Products.Find(productId);
+            var product = await db.Products.FindAsync(productId);
             if (product != null)
             {
                 db.Products.Remove(product);
-                db.SaveChanges();
+                await db.SaveChangesAsync();
                 return true;
             }
 
@@ -60,18 +61,15 @@ namespace Northwind.Services.EntityFrameworkCore.Products
             }
 
             await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
-            var products = await Task.Run(() => GetProductsByName(db, names));
-            foreach (var product in products)
+
+            var products = from product in db.Products
+                           from name in names
+                           where product.ProductName == name
+                           select MapProduct(product);
+
+            await foreach (var product in products.AsAsyncEnumerable())
             {
                 yield return product;
-            }
-
-            static IEnumerable<Product> GetProductsByName(Context.NorthwindContext db, IEnumerable<string> names)
-            {
-                return from product in db.Products
-                       from name in names
-                       where product.ProductName == name
-                       select MapProduct(product);
             }
         }
 
@@ -79,18 +77,14 @@ namespace Northwind.Services.EntityFrameworkCore.Products
         {
             await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
 
-            var products = await Task.Run(() => GetProducts(db, offset, limit));
-            foreach (var product in products)
-            {
-                yield return product;
-            }
-
-            static IEnumerable<Product> GetProducts(Context.NorthwindContext db, int offset, int limit)
-            {
-                return db.Products
+            var products = db.Products
                     .Skip(offset)
                     .Take(limit)
                     .Select(p => MapProduct(p));
+
+            await foreach (var product in products.AsAsyncEnumerable())
+            {
+                yield return product;
             }
         }
 
@@ -98,53 +92,46 @@ namespace Northwind.Services.EntityFrameworkCore.Products
         {
             await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
 
-            var products = await Task.Run(() => GetProductsForCategory(db, categoryId));
-            foreach (var product in products)
+            var products = from product in db.Products
+                           where product.CategoryId == categoryId
+                           select MapProduct(product);
+
+            await foreach (var product in products.AsAsyncEnumerable())
             {
                 yield return product;
             }
-
-            static IEnumerable<Product> GetProductsForCategory(Context.NorthwindContext db, int categoryId)
-            {
-                return db.Products
-                    .Where(p => p.CategoryId == categoryId)
-                    .Select(p => MapProduct(p))
-                    .ToList();
-            }
         }
 
-        public bool TryShowProduct(int productId, out Product product)
+        public async Task<Product> GetProductAsync(int productId)
         {
-            using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
+            await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
 
-            var contextProduct = db.Products.Find(productId);
-            product = null;
+            var contextProduct = await db.Products.FindAsync(productId);
             if (contextProduct is null)
             {
-                return false;
+                return null;//exception
             }
 
-            product = MapProduct(contextProduct);
-            return true;
+            return MapProduct(contextProduct);
         }
 
-        public bool UpdateProduct(int productId, Product product)
+        public async Task<bool> UpdateProductAsync(int productId, Product product)
         {
             if (product is null)
             {
                 throw new ArgumentNullException(nameof(product));
             }
 
-            using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
+            await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
 
-            var contextProduct = db.Products.Find(productId);
+            var contextProduct = await db.Products.FindAsync(productId);
             if (contextProduct is null)
             {
                 return false;
             }
 
             contextProduct = MapProduct(product);
-            db.SaveChanges();
+            await db.SaveChangesAsync();
             return true;
         }
 

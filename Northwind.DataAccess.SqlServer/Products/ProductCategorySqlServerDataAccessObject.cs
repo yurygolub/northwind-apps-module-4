@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using Northwind.Services.Products;
 
 #pragma warning disable S4457
@@ -27,7 +28,7 @@ namespace Northwind.Services.SqlServer.Products
         }
 
         /// <inheritdoc/>
-        public int InsertProductCategory(ProductCategoryTransferObject productCategory)
+        public async Task<int> InsertProductCategoryAsync(ProductCategoryTransferObject productCategory)
         {
             if (productCategory == null)
             {
@@ -41,32 +42,40 @@ namespace Northwind.Services.SqlServer.Products
 
             AddSqlParameters(productCategory, command);
 
-            var id = command.ExecuteScalar();
-            return (int)id;
+            if (this.connection.State != ConnectionState.Open)
+            {
+                await this.connection.OpenAsync();
+            }
+
+            return await command.ExecuteNonQueryAsync();
         }
 
         /// <inheritdoc/>
-        public bool DeleteProductCategory(int productCategoryId)
+        public async Task<bool> DeleteProductCategoryAsync(int productCategoryId)
         {
             if (productCategoryId <= 0)
             {
                 throw new ArgumentException("Must be greater than zero.", nameof(productCategoryId));
             }
 
-            using var command = new SqlCommand("DeleteProductCategory", this.connection)
+            await using var command = new SqlCommand("DeleteProductCategory", this.connection)
             {
                 CommandType = CommandType.StoredProcedure,
             };
-            const string productIdParameter = "@categoryID";
-            command.Parameters.Add(productIdParameter, SqlDbType.Int);
-            command.Parameters[productIdParameter].Value = productCategoryId;
 
-            var result = command.ExecuteScalar();
-            return ((int)result) > 0;
+            SetParameter(command, productCategoryId, "@categoryID", SqlDbType.Int, isNullable: false);
+
+            if (this.connection.State != ConnectionState.Open)
+            {
+                await this.connection.OpenAsync();
+            }
+
+            var result = await command.ExecuteNonQueryAsync();
+            return result > 0;
         }
 
         /// <inheritdoc/>
-        public ProductCategoryTransferObject FindProductCategory(int productCategoryId)
+        public async Task<ProductCategoryTransferObject> FindProductCategoryAsync(int productCategoryId)
         {
             if (productCategoryId <= 0)
             {
@@ -77,15 +86,19 @@ namespace Northwind.Services.SqlServer.Products
             {
                 CommandType = CommandType.StoredProcedure,
             };
-            const string productIdParameter = "@categoryID";
-            command.Parameters.Add(productIdParameter, SqlDbType.Int);
-            command.Parameters[productIdParameter].Value = productCategoryId;
 
-            using var reader = command.ExecuteReader();
+            SetParameter(command, productCategoryId, "@categoryID", SqlDbType.Int, isNullable: false);
 
-            if (!reader.Read())
+            if (this.connection.State != ConnectionState.Open)
             {
-                throw new ProductNotFoundException(productCategoryId);
+                await this.connection.OpenAsync();
+            }
+
+            await using var reader = await command.ExecuteReaderAsync();
+
+            if (!await reader.ReadAsync())
+            {
+                throw new ProductCategoryNotFoundException(productCategoryId);
             }
 
             return CreateProductCategory(reader);
@@ -104,24 +117,32 @@ namespace Northwind.Services.SqlServer.Products
                 throw new ArgumentException("Must be greater than zero.", nameof(limit));
             }
 
-            await using var command = new SqlCommand("SelectProductCategories", this.connection)
+            await foreach (var productCategory in SelectProductsAsync(offset, limit))
             {
-                CommandType = CommandType.StoredProcedure,
-            };
+                yield return productCategory;
+            }
 
-            const string offsetParameter = "@offset";
-            command.Parameters.Add(offsetParameter, SqlDbType.Int);
-            command.Parameters[offsetParameter].Value = offset;
-
-            const string limitParameter = "@limit";
-            command.Parameters.Add(limitParameter, SqlDbType.Int);
-            command.Parameters[limitParameter].Value = limit;
-
-            await using var reader = await command.ExecuteReaderAsync();
-
-            while (reader.Read())
+            async IAsyncEnumerable<ProductCategoryTransferObject> SelectProductsAsync(int offset, int limit)
             {
-                yield return CreateProductCategory(reader);
+                await using var command = new SqlCommand("SelectProductCategories", this.connection)
+                {
+                    CommandType = CommandType.StoredProcedure,
+                };
+
+                SetParameter(command, offset, "@offset", SqlDbType.Int, isNullable: false);
+                SetParameter(command, limit, "@limit", SqlDbType.Int, isNullable: false);
+
+                if (this.connection.State != ConnectionState.Open)
+                {
+                    await this.connection.OpenAsync();
+                }
+
+                await using var reader = await command.ExecuteReaderAsync();
+
+                while (await reader.ReadAsync())
+                {
+                    yield return CreateProductCategory(reader);
+                }
             }
         }
 
@@ -138,23 +159,39 @@ namespace Northwind.Services.SqlServer.Products
                 throw new ArgumentException("Collection is empty.", nameof(productCategoryNames));
             }
 
-            const string commandTemplate =
-@"SELECT c.CategoryID, c.CategoryName, c.Description, c.Picture FROM dbo.Categories as c
-WHERE c.CategoryName in ('{0}')
-ORDER BY c.CategoryID";
-
-            string commandText = string.Format(CultureInfo.CurrentCulture, commandTemplate, string.Join("', '", productCategoryNames));
-
-            var productCategories = this.ExecuteReaderAsync(commandText);
-
-            await foreach (var productCategory in productCategories)
+            foreach (var name in productCategoryNames)
             {
-                yield return productCategory;
+                await foreach (var productCategory in SelectProductsByNameAsync(name))
+                {
+                    yield return productCategory;
+                }
+            }
+
+            async IAsyncEnumerable<ProductCategoryTransferObject> SelectProductsByNameAsync(string productCategoryName)
+            {
+                await using var command = new SqlCommand("SelectProductCategoriesByName", this.connection)
+                {
+                    CommandType = CommandType.StoredProcedure,
+                };
+
+                SetParameter(command, productCategoryName, "@categoryName", SqlDbType.NVarChar, 15, false);
+
+                if (this.connection.State != ConnectionState.Open)
+                {
+                    await this.connection.OpenAsync();
+                }
+
+                await using var reader = await command.ExecuteReaderAsync();
+
+                while (await reader.ReadAsync())
+                {
+                    yield return CreateProductCategory(reader);
+                }
             }
         }
 
         /// <inheritdoc/>
-        public bool UpdateProductCategory(ProductCategoryTransferObject productCategory)
+        public async Task<bool> UpdateProductCategoryAsync(ProductCategoryTransferObject productCategory)
         {
             if (productCategory == null)
             {
@@ -166,14 +203,16 @@ ORDER BY c.CategoryID";
                 CommandType = CommandType.StoredProcedure,
             };
 
+            SetParameter(command, productCategory.Id, "@categoryID", SqlDbType.Int, isNullable: false);
             AddSqlParameters(productCategory, command);
 
-            const string productId = "@categoryID";
-            command.Parameters.Add(productId, SqlDbType.Int);
-            command.Parameters[productId].Value = productCategory.Id;
+            if (this.connection.State != ConnectionState.Open)
+            {
+                await this.connection.OpenAsync();
+            }
 
-            var result = command.ExecuteScalar();
-            return ((int)result) > 0;
+            var result = await command.ExecuteNonQueryAsync();
+            return result > 0;
         }
 
         private static ProductCategoryTransferObject CreateProductCategory(SqlDataReader reader)
@@ -193,35 +232,24 @@ ORDER BY c.CategoryID";
 
         private static void AddSqlParameters(ProductCategoryTransferObject productCategory, SqlCommand command)
         {
-            SetParameter(productCategory.Name, "@categoryName", SqlDbType.NVarChar, 15, false);
-            SetParameter(productCategory.Description, "@description", SqlDbType.NText);
-            SetParameter(productCategory.Picture, "@picture", SqlDbType.Image);
-
-            void SetParameter<T>(T property, string parameterName, SqlDbType dbType, int? size = null, bool isNullable = true)
-            {
-                if (size is null)
-                {
-                    command.Parameters.Add(parameterName, dbType);
-                }
-                else
-                {
-                    command.Parameters.Add(parameterName, dbType, (int)size);
-                }
-
-                command.Parameters[parameterName].IsNullable = isNullable;
-                command.Parameters[parameterName].Value = property != null ? property : DBNull.Value;
-            }
+            SetParameter(command, productCategory.Name, "@categoryName", SqlDbType.NVarChar, 15, false);
+            SetParameter(command, productCategory.Description, "@description", SqlDbType.NText);
+            SetParameter(command, productCategory.Picture, "@picture", SqlDbType.Image);
         }
 
-        private async IAsyncEnumerable<ProductCategoryTransferObject> ExecuteReaderAsync(string commandText)
+        private static void SetParameter<T>(SqlCommand command, T property, string parameterName, SqlDbType dbType, int? size = null, bool isNullable = true)
         {
-            await using var command = new SqlCommand(commandText, this.connection);
-            await using var reader = await command.ExecuteReaderAsync();
-            
-            while (reader.Read())
+            if (size is null)
             {
-                yield return CreateProductCategory(reader);
+                command.Parameters.Add(parameterName, dbType);
             }
+            else
+            {
+                command.Parameters.Add(parameterName, dbType, (int)size);
+            }
+
+            command.Parameters[parameterName].IsNullable = isNullable;
+            command.Parameters[parameterName].Value = property ?? Convert.DBNull;
         }
     }
 }

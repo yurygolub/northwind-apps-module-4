@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Northwind.Services.Employees;
 using Context = Northwind.Services.EntityFrameworkCore.Models;
 
@@ -27,28 +28,28 @@ namespace Northwind.Services.EntityFrameworkCore.Employees
             this.connectionString = connectionString;
         }
 
-        public int CreateEmployee(Employee employee)
+        public async Task<int> CreateEmployeeAsync(Employee employee)
         {
             if (employee is null)
             {
                 throw new ArgumentNullException(nameof(employee));
             }
 
-            using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
-            db.Employees.Add(MapEmployee(employee));
-            db.SaveChanges();
+            await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
+            await db.Employees.AddAsync(MapEmployee(employee));
+            await db.SaveChangesAsync();
             return employee.EmployeeID;
         }
 
-        public bool DestroyEmployee(int employeeId)
+        public async Task<bool> DestroyEmployeeAsync(int employeeId)
         {
-            using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
+            await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
 
-            var employee = db.Employees.Find(employeeId);
+            var employee = await db.Employees.FindAsync(employeeId);
             if (employee != null)
             {
                 db.Employees.Remove(employee);
-                db.SaveChanges();
+                await db.SaveChangesAsync();
                 return true;
             }
 
@@ -58,53 +59,48 @@ namespace Northwind.Services.EntityFrameworkCore.Employees
         public async IAsyncEnumerable<Employee> GetEmployeesAsync(int offset, int limit)
         {
             await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
-            var employees = await Task.Run(() => GetEmployees(db, offset, limit));
-            foreach (var employee in employees)
-            {
-                yield return employee;
-            }
 
-            static IEnumerable<Employee> GetEmployees(Context.NorthwindContext db, int offset, int limit)
-            {
-                return db.Employees
+            var employees = db.Employees
                     .Skip(offset)
                     .Take(limit)
                     .Select(e => MapEmployee(e));
+
+            await foreach (var employee in employees.AsAsyncEnumerable())
+            {
+                yield return employee;
             }
         }
 
-        public bool TryShowEmployee(int employeeId, out Employee employee)
+        public async Task<Employee> GetEmployeeAsync(int employeeId)
         {
-            using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
+            await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
 
-            var contextEmployee = db.Employees.Find(employeeId);
-            employee = null;
+            var contextEmployee = await db.Employees.FindAsync(employeeId);
             if (contextEmployee is null)
             {
-                return false;
+                return null;//exception
             }
 
-            employee = MapEmployee(contextEmployee);
-            return true;
+            return MapEmployee(contextEmployee);
         }
 
-        public bool UpdateEmployee(int employeeId, Employee employee)
+        public async Task<bool> UpdateEmployeeAsync(int employeeId, Employee employee)
         {
             if (employee is null)
             {
                 throw new ArgumentNullException(nameof(employee));
             }
 
-            using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
+            await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
 
-            var contextEmployee = db.Employees.Find(employeeId);
+            var contextEmployee = await db.Employees.FindAsync(employeeId);
             if (contextEmployee is null)
             {
                 return false;
             }
 
             contextEmployee = MapEmployee(employee);
-            db.SaveChanges();
+            await db.SaveChangesAsync();
             return true;
         }
 

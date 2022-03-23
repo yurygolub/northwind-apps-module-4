@@ -52,9 +52,7 @@ namespace NorthwindApiApp
                 .AddScoped(s =>
                 {
                     string connecionString = this.Configuration.GetConnectionString("SqlConnection");
-                    SqlConnection sqlConnection = new SqlConnection(connecionString);
-                    sqlConnection.Open();
-                    return sqlConnection;
+                    return new SqlConnection(connecionString);
                 })
                 .AddTransient<NorthwindDataAccessFactory, SqlServerDataAccessFactory>()
                 .AddControllers();

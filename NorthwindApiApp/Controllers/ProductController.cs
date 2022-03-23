@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Northwind.Services.Products;
 
 #pragma warning disable SA1600
 
 namespace NorthwindApiApp.Controllers
 {
-    [Route("api/products")]
+    [Route("api/[controller]")]
     public class ProductController : ControllerBase
     {
         private readonly IProductManagementService managementService;
@@ -16,15 +18,16 @@ namespace NorthwindApiApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetProducts()
+        public IAsyncEnumerable<Product> GetProductsAsync([FromQuery] int offset = 0, [FromQuery] int limit = 10)
         {
-            return this.Ok(this.managementService.GetProductsAsync(0, 100));
+            return this.managementService.GetProductsAsync(offset, limit);
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetProduct(int id)
+        public async Task<IActionResult> GetProductAsync(int id)
         {
-            if (!this.managementService.TryShowProduct(id, out Product product))
+            var product = await this.managementService.GetProductAsync(id);
+            if (product is null)
             {
                 return this.NotFound();
             }
@@ -33,17 +36,16 @@ namespace NorthwindApiApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateProduct([FromBody] Product product)
+        public async Task<IActionResult> CreateProductAsync([FromBody] Product product)
         {
-            this.managementService.CreateProduct(product);
-
+            await this.managementService.CreateProductAsync(product);
             return this.Ok();
         }
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteProduct(int id)
+        public async Task<IActionResult> DeleteProductAsync(int id)
         {
-            if (!this.managementService.DestroyProduct(id))
+            if (!await this.managementService.DestroyProductAsync(id))
             {
                 return this.NotFound();
             }
@@ -52,9 +54,9 @@ namespace NorthwindApiApp.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult UpdateProduct(int id, [FromBody] Product product)
+        public async Task<IActionResult> UpdateProductAsync(int id, [FromBody] Product product)
         {
-            if (!this.managementService.UpdateProduct(id, product))
+            if (!await this.managementService.UpdateProductAsync(id, product))
             {
                 return this.NotFound();
             }

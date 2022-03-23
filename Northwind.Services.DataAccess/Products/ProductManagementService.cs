@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Northwind.Services.Products;
 
 #pragma warning disable S4457
@@ -28,20 +29,20 @@ namespace Northwind.Services.DataAccess.Products
         }
 
         /// <inheritdoc/>
-        public int CreateProduct(Product product)
+        public async Task<int> CreateProductAsync(Product product)
         {
             if (product is null)
             {
                 throw new ArgumentNullException(nameof(product));
             }
 
-            return this.dataAccessObject.InsertProduct(MapProduct(product));
+            return await this.dataAccessObject.InsertProductAsync(MapProduct(product));
         }
 
         /// <inheritdoc/>
-        public bool DestroyProduct(int productId)
+        public async Task<bool> DestroyProductAsync(int productId)
         {
-            if (this.dataAccessObject.DeleteProduct(productId))
+            if (await this.dataAccessObject.DeleteProductAsync(productId))
             {
                 return true;
             }
@@ -57,7 +58,7 @@ namespace Northwind.Services.DataAccess.Products
                 throw new ArgumentNullException(nameof(names));
             }
 
-            var products = this.dataAccessObject.SelectProductsByName(names);
+            var products = this.dataAccessObject.SelectProductsByNameAsync(names);
             await foreach (var product in products)
             {
                 yield return MapProduct(product);
@@ -67,7 +68,7 @@ namespace Northwind.Services.DataAccess.Products
         /// <inheritdoc/>
         public async IAsyncEnumerable<Product> GetProductsAsync(int offset, int limit)
         {
-            var products = this.dataAccessObject.SelectProducts(offset, limit);
+            var products = this.dataAccessObject.SelectProductsAsync(offset, limit);
             await foreach (var product in products)
             {
                 yield return MapProduct(product);
@@ -77,7 +78,7 @@ namespace Northwind.Services.DataAccess.Products
         /// <inheritdoc/>
         public async IAsyncEnumerable<Product> GetProductsForCategoryAsync(int categoryId)
         {
-            var products = this.dataAccessObject.SelectProductByCategory(new[] { categoryId });
+            var products = this.dataAccessObject.SelectProductByCategoryAsync(new[] { categoryId });
             await foreach (var product in products)
             {
                 yield return MapProduct(product);
@@ -85,22 +86,21 @@ namespace Northwind.Services.DataAccess.Products
         }
 
         /// <inheritdoc/>
-        public bool TryShowProduct(int productId, out Product product)
+        public async Task<Product> GetProductAsync(int productId)
         {
-            var productTransferObject = this.dataAccessObject.FindProduct(productId);
-            product = MapProduct(productTransferObject);
-            if (product is null)
-            {
-                return false;
-            }
-
-            return true;
+            var productTransferObject = await this.dataAccessObject.FindProductAsync(productId);
+            return MapProduct(productTransferObject);
         }
 
         /// <inheritdoc/>
-        public bool UpdateProduct(int productId, Product product)
+        public async Task<bool> UpdateProductAsync(int productId, Product product)
         {
-            if (this.dataAccessObject.UpdateProduct(MapProduct(product)))
+            if (product is null)
+            {
+                throw new ArgumentNullException(nameof(product));
+            }
+
+            if (await this.dataAccessObject.UpdateProductAsync(MapProduct(product)))
             {
                 return true;
             }
@@ -110,11 +110,6 @@ namespace Northwind.Services.DataAccess.Products
 
         private static Product MapProduct(ProductTransferObject productTransferObject)
         {
-            if (productTransferObject is null)
-            {
-                return null;
-            }
-
             return new Product()
             {
                 Id = productTransferObject.Id,
@@ -132,11 +127,6 @@ namespace Northwind.Services.DataAccess.Products
 
         private static ProductTransferObject MapProduct(Product product)
         {
-            if (product is null)
-            {
-                return null;
-            }
-
             return new ProductTransferObject()
             {
                 Id = product.Id,

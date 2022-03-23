@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Threading.Tasks;
 using Northwind.Services.Employees;
 
 #pragma warning disable S4457
@@ -22,11 +23,10 @@ namespace Northwind.Services.SqlServer.Employees
         public EmployeeSqlServerDataAccessObject(SqlConnection connection)
         {
             this.connection = connection ?? throw new ArgumentNullException(nameof(connection));
-
         }
 
         /// <inheritdoc/>
-        public int InsertEmployee(EmployeeTransferObject employee)
+        public async Task<int> InsertEmployeeAsync(EmployeeTransferObject employee)
         {
             if (employee == null)
             {
@@ -40,12 +40,16 @@ namespace Northwind.Services.SqlServer.Employees
 
             AddSqlParameters(employee, command);
 
-            var id = command.ExecuteScalar();
-            return (int)id;
+            if (this.connection.State != ConnectionState.Open)
+            {
+                await this.connection.OpenAsync();
+            }
+
+            return await command.ExecuteNonQueryAsync();
         }
 
         /// <inheritdoc/>
-        public bool DeleteEmployee(int employeeId)
+        public async Task<bool> DeleteEmployeeAsync(int employeeId)
         {
             if (employeeId <= 0)
             {
@@ -56,16 +60,20 @@ namespace Northwind.Services.SqlServer.Employees
             {
                 CommandType = CommandType.StoredProcedure,
             };
-            const string productIdParameter = "@categoryID";
-            command.Parameters.Add(productIdParameter, SqlDbType.Int);
-            command.Parameters[productIdParameter].Value = employeeId;
 
-            var result = command.ExecuteScalar();
-            return ((int)result) > 0;
+            SetParameter(command, employeeId, "@categoryID", SqlDbType.Int, isNullable: false);
+
+            if (this.connection.State != ConnectionState.Open)
+            {
+                await this.connection.OpenAsync();
+            }
+
+            var result = await command.ExecuteNonQueryAsync();
+            return result > 0;
         }
 
         /// <inheritdoc/>
-        public EmployeeTransferObject FindEmployee(int employeeId)
+        public async Task<EmployeeTransferObject> FindEmployeeAsync(int employeeId)
         {
             if (employeeId <= 0)
             {
@@ -76,12 +84,17 @@ namespace Northwind.Services.SqlServer.Employees
             {
                 CommandType = CommandType.StoredProcedure,
             };
-            const string productIdParameter = "@employeeID";
-            command.Parameters.Add(productIdParameter, SqlDbType.Int);
-            command.Parameters[productIdParameter].Value = employeeId;
 
-            using var reader = command.ExecuteReader();
-            if (!reader.Read())
+            SetParameter(command, employeeId, "@employeeID", SqlDbType.Int, isNullable: false);
+
+            if (this.connection.State != ConnectionState.Open)
+            {
+                await this.connection.OpenAsync();
+            }
+
+            await using var reader = await command.ExecuteReaderAsync();
+
+            if (!await reader.ReadAsync())
             {
                 throw new EmployeeNotFoundException(employeeId);
             }
@@ -102,29 +115,37 @@ namespace Northwind.Services.SqlServer.Employees
                 throw new ArgumentException("Must be greater than zero.", nameof(limit));
             }
 
-            using var command = new SqlCommand("SelectEmployees", this.connection)
+            await foreach (var product in SelectEmployeesAsync(offset, limit))
             {
-                CommandType = CommandType.StoredProcedure,
-            };
+                yield return product;
+            }
 
-            const string offsetParameter = "@offset";
-            command.Parameters.Add(offsetParameter, SqlDbType.Int);
-            command.Parameters[offsetParameter].Value = offset;
-
-            const string limitParameter = "@limit";
-            command.Parameters.Add(limitParameter, SqlDbType.Int);
-            command.Parameters[limitParameter].Value = limit;
-
-            await using var reader = await command.ExecuteReaderAsync();
-
-            while (reader.Read())
+            async IAsyncEnumerable<EmployeeTransferObject> SelectEmployeesAsync(int offset, int limit)
             {
-                yield return CreateEmployee(reader);
+                await using var command = new SqlCommand("SelectEmployees", this.connection)
+                {
+                    CommandType = CommandType.StoredProcedure,
+                };
+
+                SetParameter(command, offset, "@offset", SqlDbType.Int, isNullable: false);
+                SetParameter(command, limit, "@limit", SqlDbType.Int, isNullable: false);
+
+                if (this.connection.State != ConnectionState.Open)
+                {
+                    await this.connection.OpenAsync();
+                }
+
+                await using var reader = await command.ExecuteReaderAsync();
+
+                while (await reader.ReadAsync())
+                {
+                    yield return CreateEmployee(reader);
+                }
             }
         }
 
         /// <inheritdoc/>
-        public bool UpdateEmployee(EmployeeTransferObject employee)
+        public async Task<bool> UpdateEmployeeAsync(EmployeeTransferObject employee)
         {
             if (employee == null)
             {
@@ -136,14 +157,16 @@ namespace Northwind.Services.SqlServer.Employees
                 CommandType = CommandType.StoredProcedure,
             };
 
+            SetParameter(command, employee.EmployeeID, "@employeeID", SqlDbType.Int, isNullable: false);
             AddSqlParameters(employee, command);
 
-            const string productId = "@employeeID";
-            command.Parameters.Add(productId, SqlDbType.Int);
-            command.Parameters[productId].Value = employee.EmployeeID;
+            if (this.connection.State != ConnectionState.Open)
+            {
+                await this.connection.OpenAsync();
+            }
 
-            var result = command.ExecuteScalar();
-            return ((int)result) > 0;
+            var result = await command.ExecuteNonQueryAsync();
+            return result > 0;
         }
 
         private static EmployeeTransferObject CreateEmployee(SqlDataReader reader)
@@ -181,38 +204,38 @@ namespace Northwind.Services.SqlServer.Employees
 
         private static void AddSqlParameters(EmployeeTransferObject employee, SqlCommand command)
         {
-            SetParameter(employee.LastName, "@lastName", SqlDbType.NVarChar, 20, false);
-            SetParameter(employee.FirstName, "@firstName", SqlDbType.NVarChar, 10, false);
-            SetParameter(employee.Title, "@title", SqlDbType.NVarChar, 30);
-            SetParameter(employee.TitleOfCourtesy, "@titleOfCourtesy", SqlDbType.NVarChar, 25);
-            SetParameter(employee.BirthDate, "@birthDate", SqlDbType.DateTime);
-            SetParameter(employee.HireDate, "@hireDate", SqlDbType.DateTime);
-            SetParameter(employee.Address, "@address", SqlDbType.NVarChar, 60);
-            SetParameter(employee.City, "@city", SqlDbType.NVarChar, 15);
-            SetParameter(employee.Region, "@region", SqlDbType.NVarChar, 15);
-            SetParameter(employee.PostalCode, "@postalCode", SqlDbType.NVarChar, 10);
-            SetParameter(employee.Country, "@country", SqlDbType.NVarChar, 15);
-            SetParameter(employee.HomePhone, "@homePhone", SqlDbType.NVarChar, 24);
-            SetParameter(employee.Extension, "@extension", SqlDbType.NVarChar, 4);
-            SetParameter(employee.Photo, "@photo", SqlDbType.Image);
-            SetParameter(employee.Notes, "@notes", SqlDbType.NText);
-            SetParameter(employee.ReportsTo, "@reportsTo", SqlDbType.Int);
-            SetParameter(employee.PhotoPath, "@photoPath", SqlDbType.NVarChar, 255);
+            SetParameter(command, employee.LastName, "@lastName", SqlDbType.NVarChar, 20, false);
+            SetParameter(command, employee.FirstName, "@firstName", SqlDbType.NVarChar, 10, false);
+            SetParameter(command, employee.Title, "@title", SqlDbType.NVarChar, 30);
+            SetParameter(command, employee.TitleOfCourtesy, "@titleOfCourtesy", SqlDbType.NVarChar, 25);
+            SetParameter(command, employee.BirthDate, "@birthDate", SqlDbType.DateTime);
+            SetParameter(command, employee.HireDate, "@hireDate", SqlDbType.DateTime);
+            SetParameter(command, employee.Address, "@address", SqlDbType.NVarChar, 60);
+            SetParameter(command, employee.City, "@city", SqlDbType.NVarChar, 15);
+            SetParameter(command, employee.Region, "@region", SqlDbType.NVarChar, 15);
+            SetParameter(command, employee.PostalCode, "@postalCode", SqlDbType.NVarChar, 10);
+            SetParameter(command, employee.Country, "@country", SqlDbType.NVarChar, 15);
+            SetParameter(command, employee.HomePhone, "@homePhone", SqlDbType.NVarChar, 24);
+            SetParameter(command, employee.Extension, "@extension", SqlDbType.NVarChar, 4);
+            SetParameter(command, employee.Photo, "@photo", SqlDbType.Image);
+            SetParameter(command, employee.Notes, "@notes", SqlDbType.NText);
+            SetParameter(command, employee.ReportsTo, "@reportsTo", SqlDbType.Int);
+            SetParameter(command, employee.PhotoPath, "@photoPath", SqlDbType.NVarChar, 255);
+        }
 
-            void SetParameter<T>(T property, string parameterName, SqlDbType dbType, int? size = null, bool isNullable = true)
+        private static void SetParameter<T>(SqlCommand command, T property, string parameterName, SqlDbType dbType, int? size = null, bool isNullable = true)
+        {
+            if (size is null)
             {
-                if (size is null)
-                {
-                    command.Parameters.Add(parameterName, dbType);
-                }
-                else
-                {
-                    command.Parameters.Add(parameterName, dbType, (int)size);
-                }
-
-                command.Parameters[parameterName].IsNullable = isNullable;
-                command.Parameters[parameterName].Value = property != null ? property : DBNull.Value;
+                command.Parameters.Add(parameterName, dbType);
             }
+            else
+            {
+                command.Parameters.Add(parameterName, dbType, (int)size);
+            }
+
+            command.Parameters[parameterName].IsNullable = isNullable;
+            command.Parameters[parameterName].Value = property ?? Convert.DBNull;
         }
     }
 }

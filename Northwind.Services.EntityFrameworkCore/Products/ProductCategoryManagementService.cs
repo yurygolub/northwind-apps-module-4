@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Northwind.Services.Products;
 using Context = Northwind.Services.EntityFrameworkCore.Models;
 
@@ -24,28 +25,28 @@ namespace Northwind.Services.EntityFrameworkCore.Products
             this.connectionString = connectionString;
         }
 
-        public int CreateCategory(ProductCategory productCategory)
+        public async Task<int> CreateCategoryAsync(ProductCategory productCategory)
         {
             if (productCategory is null)
             {
                 throw new ArgumentNullException(nameof(productCategory));
             }
 
-            using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
-            db.Categories.Add(MapProductCategory(productCategory));
-            db.SaveChanges();
+            await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
+            await db.Categories.AddAsync(MapProductCategory(productCategory));
+            await db.SaveChangesAsync();
             return productCategory.Id;
         }
 
-        public bool DestroyCategory(int categoryId)
+        public async Task<bool> DestroyCategoryAsync(int categoryId)
         {
-            using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
+            await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
 
-            var category = db.Categories.Find(categoryId);
+            var category = await db.Categories.FindAsync(categoryId);
             if (category != null)
             {
                 db.Categories.Remove(category);
-                db.SaveChanges();
+                await db.SaveChangesAsync();
                 return true;
             }
 
@@ -61,18 +62,14 @@ namespace Northwind.Services.EntityFrameworkCore.Products
 
             await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
 
-            var categories = await Task.Run(() => GetCategoriesByName(db, names));
-            foreach (var category in categories)
+            var categories = from category in db.Categories
+                           from name in names
+                           where category.CategoryName == name
+                           select MapProductCategory(category);
+
+            await foreach (var category in categories.AsAsyncEnumerable())
             {
                 yield return category;
-            }
-
-            static IEnumerable<ProductCategory> GetCategoriesByName(Context.NorthwindContext db, IEnumerable<string> names)
-            {
-                return from category in db.Categories
-                        from name in names
-                        where category.CategoryName == name
-                        select MapProductCategory(category);
             }
         }
 
@@ -80,53 +77,47 @@ namespace Northwind.Services.EntityFrameworkCore.Products
         {
             await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
 
-            var categories = await Task.Run(() => ShowCategories(db, offset, limit));
-            foreach (var category in categories)
-            {
-                yield return category;
-            }
-
-            static IEnumerable<ProductCategory> ShowCategories(Context.NorthwindContext db, int offset, int limit)
-            {
-                return db.Categories
+            var categories = db.Categories
                     .Skip(offset)
                     .Take(limit)
                     .Select(c => MapProductCategory(c));
+
+            await foreach (var category in categories.AsAsyncEnumerable())
+            {
+                yield return category;
             }
         }
 
-        public bool TryShowCategory(int categoryId, out ProductCategory productCategory)
+        public async Task<ProductCategory> GetCategoryAsync(int categoryId)
         {
-            using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
+            await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
 
-            var contextCategory = db.Categories.Find(categoryId);
-            productCategory = null;
+            var contextCategory = await db.Categories.FindAsync(categoryId);
             if (contextCategory is null)
             {
-                return false;
+                return null;//exception
             }
 
-            productCategory = MapProductCategory(contextCategory);
-            return true;
+            return MapProductCategory(contextCategory);
         }
 
-        public bool UpdateCategory(int categoryId, ProductCategory productCategory)
+        public async Task<bool> UpdateCategoryAsync(int categoryId, ProductCategory productCategory)
         {
             if (productCategory is null)
             {
                 throw new ArgumentNullException(nameof(productCategory));
             }
 
-            using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
+            await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
 
-            var contextCategory = db.Categories.Find(categoryId);
+            var contextCategory = await db.Categories.FindAsync(categoryId);
             if (contextCategory is null)
             {
                 return false;
             }
 
             contextCategory = MapProductCategory(productCategory);
-            db.SaveChanges();
+            await db.SaveChangesAsync();
             return true;
         }
 

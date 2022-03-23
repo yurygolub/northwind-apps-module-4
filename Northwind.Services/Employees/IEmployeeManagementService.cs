@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Northwind.Services.Employees
 {
@@ -8,7 +9,7 @@ namespace Northwind.Services.Employees
     public interface IEmployeeManagementService
     {
         /// <summary>
-        /// Shows a list of employees using specified offset and limit for pagination.
+        /// Gets a list of employees using specified offset and limit for pagination.
         /// </summary>
         /// <param name="offset">An offset of the first element to return.</param>
         /// <param name="limit">A limit of elements to return.</param>
@@ -16,26 +17,25 @@ namespace Northwind.Services.Employees
         IAsyncEnumerable<Employee> GetEmployeesAsync(int offset, int limit);
 
         /// <summary>
-        /// Try to show a employee with specified identifier.
+        /// Gets an employee with specified identifier.
         /// </summary>
         /// <param name="employeeId">An employee identifier.</param>
-        /// <param name="employee">An employee to return.</param>
-        /// <returns>Returns true if a product is returned; otherwise false.</returns>
-        bool TryShowEmployee(int employeeId, out Employee employee);
+        /// <returns>Returns a <see cref="Employee"/> object.</returns>
+        Task<Employee> GetEmployeeAsync(int employeeId);
 
         /// <summary>
         /// Creates a new employee.
         /// </summary>
         /// <param name="employee">A <see cref="Employee"/> to create.</param>
         /// <returns>An identifier of a created employee.</returns>
-        int CreateEmployee(Employee employee);
+        Task<int> CreateEmployeeAsync(Employee employee);
 
         /// <summary>
         /// Destroys an existed employee.
         /// </summary>
         /// <param name="employeeId">An employee identifier.</param>
         /// <returns>True if an employee is destroyed; otherwise false.</returns>
-        bool DestroyEmployee(int employeeId);
+        Task<bool> DestroyEmployeeAsync(int employeeId);
 
         /// <summary>
         /// Updates an employee.
@@ -43,6 +43,6 @@ namespace Northwind.Services.Employees
         /// <param name="employeeId">An employee identifier.</param>
         /// <param name="employee">An <see cref="Employee"/>.</param>
         /// <returns>True if an employee is updated; otherwise false.</returns>
-        bool UpdateEmployee(int employeeId, Employee employee);
+        Task<bool> UpdateEmployeeAsync(int employeeId, Employee employee);
     }
 }

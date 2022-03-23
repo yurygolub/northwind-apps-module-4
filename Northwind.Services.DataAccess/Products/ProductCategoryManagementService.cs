@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Northwind.Services.Products;
 
 #pragma warning disable S4457
@@ -28,20 +29,20 @@ namespace Northwind.Services.DataAccess.Products
         }
 
         /// <inheritdoc/>
-        public int CreateCategory(ProductCategory productCategory)
+        public async Task<int> CreateCategoryAsync(ProductCategory productCategory)
         {
             if (productCategory is null)
             {
                 throw new ArgumentNullException(nameof(productCategory));
             }
 
-            return this.dataAccessObject.InsertProductCategory(MapProductCategory(productCategory));
+            return await this.dataAccessObject.InsertProductCategoryAsync(MapProductCategory(productCategory));
         }
 
         /// <inheritdoc/>
-        public bool DestroyCategory(int categoryId)
+        public async Task<bool> DestroyCategoryAsync(int categoryId)
         {
-            if (this.dataAccessObject.DeleteProductCategory(categoryId))
+            if (await this.dataAccessObject.DeleteProductCategoryAsync(categoryId))
             {
                 return true;
             }
@@ -75,22 +76,21 @@ namespace Northwind.Services.DataAccess.Products
         }
 
         /// <inheritdoc/>
-        public bool TryShowCategory(int categoryId, out ProductCategory productCategory)
+        public async Task<ProductCategory> GetCategoryAsync(int categoryId)
         {
-            var productTransferObject = this.dataAccessObject.FindProductCategory(categoryId);
-            productCategory = MapProductCategory(productTransferObject);
-            if (productCategory is null)
-            {
-                return false;
-            }
-
-            return true;
+            var productTransferObject = await this.dataAccessObject.FindProductCategoryAsync(categoryId);
+            return MapProductCategory(productTransferObject);
         }
 
         /// <inheritdoc/>
-        public bool UpdateCategory(int categoryId, ProductCategory productCategory)
+        public async Task<bool> UpdateCategoryAsync(int categoryId, ProductCategory productCategory)
         {
-            if (this.dataAccessObject.UpdateProductCategory(MapProductCategory(productCategory)))
+            if (productCategory is null)
+            {
+                throw new ArgumentNullException(nameof(productCategory));
+            }
+
+            if (await this.dataAccessObject.UpdateProductCategoryAsync(MapProductCategory(productCategory)))
             {
                 return true;
             }
@@ -100,11 +100,6 @@ namespace Northwind.Services.DataAccess.Products
 
         private static ProductCategory MapProductCategory(ProductCategoryTransferObject productCategoruTransferObject)
         {
-            if (productCategoruTransferObject is null)
-            {
-                return null;
-            }
-
             return new ProductCategory()
             {
                 Id = productCategoruTransferObject.Id,
@@ -115,11 +110,6 @@ namespace Northwind.Services.DataAccess.Products
 
         private static ProductCategoryTransferObject MapProductCategory(ProductCategory productCategory)
         {
-            if (productCategory is null)
-            {
-                return null;
-            }
-
             return new ProductCategoryTransferObject()
             {
                 Id = productCategory.Id,

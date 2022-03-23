@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Northwind.Services.Employees;
 
 namespace Northwind.Services.DataAccess.Employees
@@ -26,20 +27,20 @@ namespace Northwind.Services.DataAccess.Employees
         }
 
         /// <inheritdoc/>
-        public int CreateEmployee(Employee employee)
+        public async Task<int> CreateEmployeeAsync(Employee employee)
         {
             if (employee is null)
             {
                 throw new ArgumentNullException(nameof(employee));
             }
 
-            return this.dataAccessObject.InsertEmployee(MapEmployee(employee));
+            return await this.dataAccessObject.InsertEmployeeAsync(MapEmployee(employee));
         }
 
         /// <inheritdoc/>
-        public bool DestroyEmployee(int employeeId)
+        public async Task<bool> DestroyEmployeeAsync(int employeeId)
         {
-            if (this.dataAccessObject.DeleteEmployee(employeeId))
+            if (await this.dataAccessObject.DeleteEmployeeAsync(employeeId))
             {
                 return true;
             }
@@ -58,22 +59,21 @@ namespace Northwind.Services.DataAccess.Employees
         }
 
         /// <inheritdoc/>
-        public bool TryShowEmployee(int employeeId, out Employee employee)
+        public async Task<Employee> GetEmployeeAsync(int employeeId)
         {
-            var productTransferObject = this.dataAccessObject.FindEmployee(employeeId);
-            employee = MapEmployee(productTransferObject);
-            if (employee is null)
-            {
-                return false;
-            }
-
-            return true;
+            var employeeTransferObject = await this.dataAccessObject.FindEmployeeAsync(employeeId);
+            return MapEmployee(employeeTransferObject);
         }
 
         /// <inheritdoc/>
-        public bool UpdateEmployee(int employeeId, Employee employee)
+        public async Task<bool> UpdateEmployeeAsync(int employeeId, Employee employee)
         {
-            if (this.dataAccessObject.UpdateEmployee(MapEmployee(employee)))
+            if (employee is null)
+            {
+                throw new ArgumentNullException(nameof(employee));
+            }
+
+            if (await this.dataAccessObject.UpdateEmployeeAsync(MapEmployee(employee)))
             {
                 return true;
             }
@@ -83,11 +83,6 @@ namespace Northwind.Services.DataAccess.Employees
 
         private static Employee MapEmployee(EmployeeTransferObject employee)
         {
-            if (employee is null)
-            {
-                return null;
-            }
-
             return new Employee()
             {
                 EmployeeID = employee.EmployeeID,
@@ -113,11 +108,6 @@ namespace Northwind.Services.DataAccess.Employees
 
         private static EmployeeTransferObject MapEmployee(Employee employee)
         {
-            if (employee is null)
-            {
-                return null;
-            }
-
             return new EmployeeTransferObject()
             {
                 EmployeeID = employee.EmployeeID,

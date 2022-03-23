@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Northwind.Services.Employees;
 
 #pragma warning disable SA1600
 
 namespace NorthwindApiApp.Controllers
 {
-    [Route("api/employees")]
+    [ApiController]
+    [Route("api/[controller]")]
     public class EmployeeController : ControllerBase
     {
         private readonly IEmployeeManagementService managementService;
@@ -16,15 +18,16 @@ namespace NorthwindApiApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetEmployees()
+        public IActionResult GetEmployees([FromQuery] int offset = 0, [FromQuery] int limit = 10)
         {
-            return this.Ok(this.managementService.GetEmployeesAsync(0, 100));
+            return this.Ok(this.managementService.GetEmployeesAsync(offset, limit));
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetEmployee(int id)
+        public async Task<IActionResult> GetEmployeeAsync(int id)
         {
-            if (!this.managementService.TryShowEmployee(id, out Employee employee))
+            var employee = await this.managementService.GetEmployeeAsync(id);
+            if (employee is null)
             {
                 return this.NotFound();
             }
@@ -33,17 +36,16 @@ namespace NorthwindApiApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateEmployee([FromBody] Employee employee)
+        public async Task<IActionResult> CreateEmployeeAsync([FromBody] Employee employee)
         {
-            this.managementService.CreateEmployee(employee);
-
+            await this.managementService.CreateEmployeeAsync(employee);
             return this.Ok();
         }
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteEmployee(int id)
+        public async Task<IActionResult> DeleteEmployeeAsync(int id)
         {
-            if (!this.managementService.DestroyEmployee(id))
+            if (!await this.managementService.DestroyEmployeeAsync(id))
             {
                 return this.NotFound();
             }
@@ -52,9 +54,9 @@ namespace NorthwindApiApp.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult UpdateEmployee(int id, [FromBody] Employee employee)
+        public async Task<IActionResult> UpdateEmployeeAsync(int id, [FromBody] Employee employee)
         {
-            if (!this.managementService.UpdateEmployee(id, employee))
+            if (!await this.managementService.UpdateEmployeeAsync(id, employee))
             {
                 return this.NotFound();
             }

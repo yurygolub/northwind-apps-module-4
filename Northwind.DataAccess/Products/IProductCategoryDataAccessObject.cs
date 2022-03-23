@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Northwind.Services.Products
 {
@@ -12,28 +13,28 @@ namespace Northwind.Services.Products
         /// </summary>
         /// <param name="productCategory">A <see cref="ProductCategoryTransferObject"/>.</param>
         /// <returns>A data storage identifier of a new product category.</returns>
-        int InsertProductCategory(ProductCategoryTransferObject productCategory);
+        Task<int> InsertProductCategoryAsync(ProductCategoryTransferObject productCategory);
 
         /// <summary>
         /// Deletes a Northwind product category from a data storage.
         /// </summary>
         /// <param name="productCategoryId">An product category identifier.</param>
         /// <returns>True if a product category is deleted; otherwise false.</returns>
-        bool DeleteProductCategory(int productCategoryId);
+        Task<bool> DeleteProductCategoryAsync(int productCategoryId);
 
         /// <summary>
         /// Updates a Northwind product category in a data storage.
         /// </summary>
         /// <param name="productCategory">A <see cref="ProductCategoryTransferObject"/>.</param>
         /// <returns>True if a product category is updated; otherwise false.</returns>
-        bool UpdateProductCategory(ProductCategoryTransferObject productCategory);
+        Task<bool> UpdateProductCategoryAsync(ProductCategoryTransferObject productCategory);
 
         /// <summary>
         /// Finds a Northwind product category using a specified identifier.
         /// </summary>
         /// <param name="productCategoryId">A data storage identifier of an existed product category.</param>
         /// <returns>A <see cref="ProductCategoryTransferObject"/> with specified identifier.</returns>
-        ProductCategoryTransferObject FindProductCategory(int productCategoryId);
+        Task<ProductCategoryTransferObject> FindProductCategoryAsync(int productCategoryId);
 
         /// <summary>
         /// Selects product categories using specified offset and limit.
