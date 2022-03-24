@@ -90,7 +90,7 @@ namespace Northwind.Services.DataAccess.Products
                 throw new ArgumentNullException(nameof(productCategory));
             }
 
-            if (await this.dataAccessObject.UpdateProductCategoryAsync(MapProductCategory(productCategory)))
+            if (await this.dataAccessObject.UpdateProductCategoryAsync(categoryId, MapProductCategory(productCategory)))
             {
                 return true;
             }
@@ -105,6 +105,7 @@ namespace Northwind.Services.DataAccess.Products
                 Id = productCategoruTransferObject.Id,
                 Name = productCategoruTransferObject.Name,
                 Description = productCategoruTransferObject.Description,
+                Picture = productCategoruTransferObject.Picture,
             };
         }
 
@@ -115,6 +116,7 @@ namespace Northwind.Services.DataAccess.Products
                 Id = productCategory.Id,
                 Name = productCategory.Name,
                 Description = productCategory.Description,
+                Picture = productCategory.Picture,
             };
         }
     }

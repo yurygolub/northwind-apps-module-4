@@ -100,7 +100,7 @@ namespace Northwind.Services.DataAccess.Products
                 throw new ArgumentNullException(nameof(product));
             }
 
-            if (await this.dataAccessObject.UpdateProductAsync(MapProduct(product)))
+            if (await this.dataAccessObject.UpdateProductAsync(productId, MapProduct(product)))
             {
                 return true;
             }

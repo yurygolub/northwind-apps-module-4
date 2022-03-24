@@ -73,7 +73,7 @@ namespace Northwind.Services.DataAccess.Employees
                 throw new ArgumentNullException(nameof(employee));
             }
 
-            if (await this.dataAccessObject.UpdateEmployeeAsync(MapEmployee(employee)))
+            if (await this.dataAccessObject.UpdateEmployeeAsync(employeeId, MapEmployee(employee)))
             {
                 return true;
             }

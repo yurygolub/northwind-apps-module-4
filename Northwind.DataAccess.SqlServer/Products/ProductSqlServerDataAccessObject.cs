@@ -191,7 +191,7 @@ namespace Northwind.Services.SqlServer.Products
         }
 
         /// <inheritdoc/>
-        public async Task<bool> UpdateProductAsync(ProductTransferObject product)
+        public async Task<bool> UpdateProductAsync(int productId, ProductTransferObject product)
         {
             if (product == null)
             {
@@ -203,7 +203,7 @@ namespace Northwind.Services.SqlServer.Products
                 CommandType = CommandType.StoredProcedure,
             };
 
-            SetParameter(command, product.Id, "@productId", SqlDbType.Int, isNullable: false);
+            SetParameter(command, productId, "@productId", SqlDbType.Int, isNullable: false);
             AddSqlParameters(product, command);
 
             if (this.connection.State != ConnectionState.Open)

@@ -145,7 +145,7 @@ namespace Northwind.Services.SqlServer.Employees
         }
 
         /// <inheritdoc/>
-        public async Task<bool> UpdateEmployeeAsync(EmployeeTransferObject employee)
+        public async Task<bool> UpdateEmployeeAsync(int employeeId, EmployeeTransferObject employee)
         {
             if (employee == null)
             {
@@ -157,7 +157,7 @@ namespace Northwind.Services.SqlServer.Employees
                 CommandType = CommandType.StoredProcedure,
             };
 
-            SetParameter(command, employee.EmployeeID, "@employeeID", SqlDbType.Int, isNullable: false);
+            SetParameter(command, employeeId, "@employeeID", SqlDbType.Int, isNullable: false);
             AddSqlParameters(employee, command);
 
             if (this.connection.State != ConnectionState.Open)

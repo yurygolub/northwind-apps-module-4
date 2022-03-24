@@ -78,7 +78,7 @@ namespace Northwind.Services.EntityFrameworkCore.Employees
             var contextEmployee = await db.Employees.FindAsync(employeeId);
             if (contextEmployee is null)
             {
-                return null;//exception
+                return null;
             }
 
             return MapEmployee(contextEmployee);
@@ -98,8 +98,25 @@ namespace Northwind.Services.EntityFrameworkCore.Employees
             {
                 return false;
             }
+            
+            contextEmployee.Address = employee.Address;
+            contextEmployee.BirthDate = employee.BirthDate;
+            contextEmployee.City = employee.City;
+            contextEmployee.Country = employee.Country;
+            contextEmployee.Extension = employee.Extension;
+            contextEmployee.FirstName = employee.FirstName;
+            contextEmployee.LastName = employee.LastName;
+            contextEmployee.HireDate = employee.HireDate;
+            contextEmployee.HomePhone = employee.HomePhone;
+            contextEmployee.Notes = employee.Notes;
+            contextEmployee.Photo = employee.Photo;
+            contextEmployee.PhotoPath = employee.PhotoPath;
+            contextEmployee.PostalCode = employee.PostalCode;
+            contextEmployee.Region = employee.Region;
+            contextEmployee.ReportsTo = employee.ReportsTo;
+            contextEmployee.Title = employee.Title;
+            contextEmployee.TitleOfCourtesy = employee.TitleOfCourtesy;
 
-            contextEmployee = MapEmployee(employee);
             await db.SaveChangesAsync();
             return true;
         }

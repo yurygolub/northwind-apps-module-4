@@ -25,9 +25,10 @@ namespace Northwind.Services.Employees
         /// <summary>
         /// Updates a Northwind employee in a data storage.
         /// </summary>
+        /// <param name="employeeId">A data storage identifier of an existed employee.</param>
         /// <param name="employee">An <see cref="EmployeeTransferObject"/>.</param>
         /// <returns>True if an employee is updated; otherwise false.</returns>
-        Task<bool> UpdateEmployeeAsync(EmployeeTransferObject employee);
+        Task<bool> UpdateEmployeeAsync(int employeeId, EmployeeTransferObject employee);
 
         /// <summary>
         /// Finds a Northwind employee using a specified identifier.

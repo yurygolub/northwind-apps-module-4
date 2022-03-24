@@ -109,7 +109,7 @@ namespace Northwind.Services.EntityFrameworkCore.Products
             var contextProduct = await db.Products.FindAsync(productId);
             if (contextProduct is null)
             {
-                return null;//exception
+                return null;
             }
 
             return MapProduct(contextProduct);
@@ -130,7 +130,16 @@ namespace Northwind.Services.EntityFrameworkCore.Products
                 return false;
             }
 
-            contextProduct = MapProduct(product);
+            contextProduct.CategoryId = product.CategoryId;
+            contextProduct.Discontinued = product.Discontinued;
+            contextProduct.ProductName = product.Name;
+            contextProduct.QuantityPerUnit = product.QuantityPerUnit;
+            contextProduct.ReorderLevel = product.ReorderLevel;
+            contextProduct.SupplierId = product.SupplierId;
+            contextProduct.UnitPrice = product.UnitPrice;
+            contextProduct.UnitsInStock = product.UnitsInStock;
+            contextProduct.UnitsOnOrder = product.UnitsOnOrder;
+
             await db.SaveChangesAsync();
             return true;
         }

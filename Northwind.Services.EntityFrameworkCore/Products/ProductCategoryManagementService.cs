@@ -95,7 +95,7 @@ namespace Northwind.Services.EntityFrameworkCore.Products
             var contextCategory = await db.Categories.FindAsync(categoryId);
             if (contextCategory is null)
             {
-                return null;//exception
+                return null;
             }
 
             return MapProductCategory(contextCategory);
@@ -116,7 +116,10 @@ namespace Northwind.Services.EntityFrameworkCore.Products
                 return false;
             }
 
-            contextCategory = MapProductCategory(productCategory);
+            contextCategory.CategoryName = productCategory.Name;
+            contextCategory.Description = productCategory.Description;
+            contextCategory.Picture = productCategory.Picture;
+
             await db.SaveChangesAsync();
             return true;
         }
@@ -128,6 +131,7 @@ namespace Northwind.Services.EntityFrameworkCore.Products
                 Id = category.CategoryId,
                 Name = category.CategoryName,
                 Description = category.Description,
+                Picture = category.Picture,
             };
         }
 
@@ -138,6 +142,7 @@ namespace Northwind.Services.EntityFrameworkCore.Products
                 CategoryId = productCategory.Id,
                 CategoryName = productCategory.Name,
                 Description = productCategory.Description,
+                Picture = productCategory.Picture,
             };
         }
     }

@@ -1,4 +1,6 @@
-﻿namespace Northwind.Services.Products
+﻿#pragma warning disable CA1819 // Properties should not return arrays
+
+namespace Northwind.Services.Products
 {
     /// <summary>
     /// Represents a product category.
@@ -19,5 +21,10 @@
         /// Gets or sets a product category description.
         /// </summary>
         public string Description { get; set; }
+
+        /// <summary>
+        /// Gets or sets a product category picture.
+        /// </summary>
+        public byte[] Picture { get; set; }
     }
 }

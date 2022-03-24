@@ -25,9 +25,10 @@ namespace Northwind.Services.Products
         /// <summary>
         /// Updates a Northwind product in a data storage.
         /// </summary>
+        /// <param name="productId">A data storage identifier of an existed product.</param>
         /// <param name="product">A <see cref="ProductTransferObject"/>.</param>
         /// <returns>True if a product is updated; otherwise false.</returns>
-        Task<bool> UpdateProductAsync(ProductTransferObject product);
+        Task<bool> UpdateProductAsync(int productId, ProductTransferObject product);
 
         /// <summary>
         /// Finds a Northwind product using a specified identifier.

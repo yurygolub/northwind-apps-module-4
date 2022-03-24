@@ -191,7 +191,7 @@ namespace Northwind.Services.SqlServer.Products
         }
 
         /// <inheritdoc/>
-        public async Task<bool> UpdateProductCategoryAsync(ProductCategoryTransferObject productCategory)
+        public async Task<bool> UpdateProductCategoryAsync(int productCategoryId, ProductCategoryTransferObject productCategory)
         {
             if (productCategory == null)
             {
@@ -203,7 +203,7 @@ namespace Northwind.Services.SqlServer.Products
                 CommandType = CommandType.StoredProcedure,
             };
 
-            SetParameter(command, productCategory.Id, "@categoryID", SqlDbType.Int, isNullable: false);
+            SetParameter(command, productCategoryId, "@categoryID", SqlDbType.Int, isNullable: false);
             AddSqlParameters(productCategory, command);
 
             if (this.connection.State != ConnectionState.Open)
