@@ -11,10 +11,12 @@
         <AdditionalFiles Include="..\stylecop.json" Link="Properties\stylecop.json" />
     </ItemGroup>
     <ItemGroup>
+        <PackageReference Include="Bogus" Version="34.0.1" />
         <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.0.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="5.0.15" />
         <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
@@ -26,6 +28,7 @@
     <ProjectReference Include="..\Northwind.DataAccess\Northwind.DataAccess.csproj" />
     <ProjectReference Include="..\Northwind.Services.DataAccess\Northwind.Services.DataAccess.csproj" />
     <ProjectReference Include="..\Northwind.Services.EntityFrameworkCore\Northwind.Services.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\Northwind.Services.InMemory\Northwind.Services.InMemory.csproj" />
     <ProjectReference Include="..\Northwind.Services\Northwind.Services.csproj" />
   </ItemGroup>
 

@@ -1,4 +1,5 @@
 ﻿using System.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Northwind.Services;
@@ -7,6 +8,7 @@ using Northwind.Services.Products;
 using Northwind.Services.SqlServer;
 using DataAccess = Northwind.Services.DataAccess;
 using EntityFramework = Northwind.Services.EntityFrameworkCore;
+using InMemory = Northwind.Services.InMemory;
 
 namespace NorthwindApiApp
 {
@@ -31,7 +33,20 @@ namespace NorthwindApiApp
                 .AddTransient<IProductCategoryManagementService, EntityFramework.Products.ProductCategoryManagementService>()
                 .AddTransient<IProductCategoryPicturesService, EntityFramework.Products.ProductCategoryPicturesService>()
                 .AddTransient<IEmployeeManagementService, EntityFramework.Employees.EmployeeManagementService>()
+                .AddTransient<IEmployeePicturesService, EntityFramework.Employees.EmployeePicturesService>()
                 .AddScoped(s => configuration.GetConnectionString("SqlConnection"));
+        }
+
+        public static IServiceCollection AddInMemoryServices(this IServiceCollection services, IConfiguration configuration)
+        {
+            return services
+                .AddTransient<IProductManagementService, InMemory.Products.ProductManagementService>()
+                .AddTransient<IProductCategoryManagementService, InMemory.Products.ProductCategoryManagementService>()
+                .AddTransient<IProductCategoryPicturesService, InMemory.Products.ProductCategoryPicturesService>()
+                .AddTransient<IEmployeeManagementService, InMemory.Employees.EmployeeManagementService>()
+                .AddTransient<IEmployeePicturesService, InMemory.Employees.EmployeePicturesService>()
+                .AddSingleton<SeedData>()
+                .AddDbContext<InMemory.NorthwindContext>(opt => opt.UseInMemoryDatabase("Northwind"), ServiceLifetime.Singleton);
         }
     }
 }
