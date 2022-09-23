@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
-using Northwind.Services.Employees;
+using Northwind.DataAccess.Employees;
 
 #pragma warning disable S4457
 
-namespace Northwind.Services.SqlServer.Employees
+namespace Northwind.DataAccess.SqlServer.Employees
 {
     /// <summary>
     /// Represents a SQL Server-tailored DAO for Northwind products.

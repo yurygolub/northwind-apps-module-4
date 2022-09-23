@@ -1,7 +1,7 @@
-﻿using Northwind.Services.Employees;
-using Northwind.Services.Products;
+﻿using Northwind.DataAccess.Employees;
+using Northwind.DataAccess.Products;
 
-namespace Northwind.Services
+namespace Northwind.DataAccess
 {
     /// <summary>
     /// Represents an abstract factory for creating Northwind DAO.

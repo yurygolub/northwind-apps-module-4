@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Runtime.Serialization;
 
-namespace Northwind.Services.Employees
+namespace Northwind.DataAccess.Employees
 {
     /// <summary>
     /// The exception that is thrown when an employee is not found in a data storage.

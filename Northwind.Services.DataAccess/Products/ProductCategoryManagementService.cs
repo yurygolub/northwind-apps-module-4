@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Northwind.DataAccess;
+using Northwind.DataAccess.Products;
 using Northwind.Services.Products;
 
 #pragma warning disable S4457

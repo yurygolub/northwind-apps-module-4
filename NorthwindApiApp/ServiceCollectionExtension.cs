@@ -2,10 +2,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Northwind.Services;
+using Northwind.DataAccess;
+using Northwind.DataAccess.SqlServer;
 using Northwind.Services.Employees;
 using Northwind.Services.Products;
-using Northwind.Services.SqlServer;
 using DataAccess = Northwind.Services.DataAccess;
 using EntityFramework = Northwind.Services.EntityFrameworkCore;
 using InMemory = Northwind.Services.InMemory;

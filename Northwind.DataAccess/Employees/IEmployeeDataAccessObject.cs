@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Northwind.Services.Employees
+namespace Northwind.DataAccess.Employees
 {
     /// <summary>
     /// Represents a DAO for Northwind employees.

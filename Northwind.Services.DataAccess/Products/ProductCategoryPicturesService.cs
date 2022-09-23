@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using Northwind.DataAccess;
+using Northwind.DataAccess.Products;
 using Northwind.Services.Products;
 
 namespace Northwind.Services.DataAccess.Products
@@ -26,7 +28,7 @@ namespace Northwind.Services.DataAccess.Products
         public async Task<Stream> GetProductCategoryPictureAsync(int categoryId)
         {
             var category = await this.dataAccessObject.FindProductCategoryAsync(categoryId);
-            if (category?.Picture is null)
+            if (category.Picture is null)
             {
                 return null;
             }

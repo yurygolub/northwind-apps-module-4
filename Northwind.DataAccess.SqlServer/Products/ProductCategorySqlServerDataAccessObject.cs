@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using Northwind.Services.Products;
+using Northwind.DataAccess.Products;
 
 #pragma warning disable S4457
 
-namespace Northwind.Services.SqlServer.Products
+namespace Northwind.DataAccess.SqlServer.Products
 {
     /// <summary>
     /// Represents a SQL Server-tailored DAO for Northwind product categories.
