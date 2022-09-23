@@ -27,13 +27,20 @@ namespace Northwind.Services.DataAccess.Products
 
         public async Task<Stream> GetProductCategoryPictureAsync(int categoryId)
         {
-            var category = await this.dataAccessObject.FindProductCategoryAsync(categoryId);
-            if (category.Picture is null)
+            try
+            {
+                var category = await this.dataAccessObject.FindProductCategoryAsync(categoryId);
+                if (category.Picture is null)
+                {
+                    return null;
+                }
+
+                return new MemoryStream(category.Picture[78..]);
+            }
+            catch (ProductCategoryNotFoundException)
             {
                 return null;
             }
-
-            return new MemoryStream(category.Picture[78..]);
         }
 
         public async Task<bool> DeleteProductCategoryPictureAsync(int categoryId)

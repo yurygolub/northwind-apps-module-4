@@ -27,13 +27,20 @@ namespace Northwind.Services.DataAccess.Employees
 
         public async Task<Stream> GetEmployeePictureAsync(int employeeId)
         {
-            var employee = await this.dataAccessObject.FindEmployeeAsync(employeeId);
-            if (employee?.Photo is null)
+            try
+            {
+                var employee = await this.dataAccessObject.FindEmployeeAsync(employeeId);
+                if (employee?.Photo is null)
+                {
+                    return null;
+                }
+
+                return new MemoryStream(employee.Photo[78..]);
+            }
+            catch (EmployeeNotFoundException)
             {
                 return null;
             }
-
-            return new MemoryStream(employee.Photo[78..]);
         }
 
         public async Task<bool> DeleteEmployeePictureAsync(int employeeId)

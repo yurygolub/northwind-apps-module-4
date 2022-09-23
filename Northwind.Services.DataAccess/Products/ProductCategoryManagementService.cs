@@ -80,8 +80,15 @@ namespace Northwind.Services.DataAccess.Products
         /// <inheritdoc/>
         public async Task<ProductCategory> GetCategoryAsync(int categoryId)
         {
-            var productTransferObject = await this.dataAccessObject.FindProductCategoryAsync(categoryId);
-            return MapProductCategory(productTransferObject);
+            try
+            {
+                var productTransferObject = await this.dataAccessObject.FindProductCategoryAsync(categoryId);
+                return MapProductCategory(productTransferObject);
+            }
+            catch (ProductCategoryNotFoundException)
+            {
+                return null;
+            }
         }
 
         /// <inheritdoc/>

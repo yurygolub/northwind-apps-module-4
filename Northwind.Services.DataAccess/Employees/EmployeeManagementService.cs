@@ -63,8 +63,15 @@ namespace Northwind.Services.DataAccess.Employees
         /// <inheritdoc/>
         public async Task<Employee> GetEmployeeAsync(int employeeId)
         {
-            var employeeTransferObject = await this.dataAccessObject.FindEmployeeAsync(employeeId);
-            return MapEmployee(employeeTransferObject);
+            try
+            {
+                var employeeTransferObject = await this.dataAccessObject.FindEmployeeAsync(employeeId);
+                return MapEmployee(employeeTransferObject);
+            }
+            catch (EmployeeNotFoundException)
+            {
+                return null;
+            }
         }
 
         /// <inheritdoc/>

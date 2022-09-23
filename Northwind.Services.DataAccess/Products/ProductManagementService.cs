@@ -90,8 +90,15 @@ namespace Northwind.Services.DataAccess.Products
         /// <inheritdoc/>
         public async Task<Product> GetProductAsync(int productId)
         {
-            var productTransferObject = await this.dataAccessObject.FindProductAsync(productId);
-            return MapProduct(productTransferObject);
+            try
+            {
+                var productTransferObject = await this.dataAccessObject.FindProductAsync(productId);
+                return MapProduct(productTransferObject);
+            }
+            catch (ProductNotFoundException)
+            {
+                return null;
+            }
         }
 
         /// <inheritdoc/>
