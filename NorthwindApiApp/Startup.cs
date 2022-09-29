@@ -17,7 +17,7 @@ namespace NorthwindApiApp
 
         public IConfiguration Configuration { get; }
 
-        public static void Configure(IApplicationBuilder app, IWebHostEnvironment env, SeedData seedData)
+        public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -31,7 +31,8 @@ namespace NorthwindApiApp
                 endpoints.MapControllers();
             });
 
-            seedData.SeedDatabase();
+            SeedData seedData = app?.ApplicationServices.GetService<SeedData>();
+            seedData?.SeedDatabase();
         }
 
         public void ConfigureServices(IServiceCollection services)
