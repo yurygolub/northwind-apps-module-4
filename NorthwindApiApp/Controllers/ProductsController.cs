@@ -9,11 +9,11 @@ namespace NorthwindApiApp.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ProductController : ControllerBase
+    public class ProductsController : ControllerBase
     {
         private readonly IProductManagementService managementService;
 
-        public ProductController(IProductManagementService managementService)
+        public ProductsController(IProductManagementService managementService)
         {
             this.managementService = managementService;
         }

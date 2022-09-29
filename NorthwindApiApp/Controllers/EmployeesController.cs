@@ -9,12 +9,12 @@ namespace NorthwindApiApp.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class EmployeeController : ControllerBase
+    public class EmployeesController : ControllerBase
     {
         private readonly IEmployeeManagementService managementService;
         private readonly IEmployeePicturesService picturesService;
 
-        public EmployeeController(IEmployeeManagementService managementService, IEmployeePicturesService picturesService)
+        public EmployeesController(IEmployeeManagementService managementService, IEmployeePicturesService picturesService)
         {
             this.managementService = managementService;
             this.picturesService = picturesService;
