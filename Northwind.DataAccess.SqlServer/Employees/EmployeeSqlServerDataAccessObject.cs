@@ -61,7 +61,7 @@ namespace Northwind.DataAccess.SqlServer.Employees
                 CommandType = CommandType.StoredProcedure,
             };
 
-            SetParameter(command, employeeId, "@categoryID", SqlDbType.Int, isNullable: false);
+            SetParameter(command, employeeId, "@employeeID", SqlDbType.Int, isNullable: false);
 
             if (this.connection.State != ConnectionState.Open)
             {

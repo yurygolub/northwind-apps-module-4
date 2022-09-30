@@ -18,6 +18,9 @@ GO
 CREATE PROCEDURE [dbo].[DeleteProduct]
 	@productID int
 AS
+	DELETE FROM dbo.[Order Details]
+	WHERE [Order Details].ProductID = @productID
+
 	DELETE FROM dbo.Products WHERE ProductID = @productID SELECT @@ROWCOUNT
 
 GO
