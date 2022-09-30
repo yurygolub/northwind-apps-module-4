@@ -46,6 +46,14 @@ namespace Northwind.Services.EntityFrameworkCore.Products
             if (category != null)
             {
                 db.Categories.Remove(category);
+
+                var products = db.Products.Where(product => product.Category == category);
+                db.Products.RemoveRange(products);
+
+                var orderDetails = products.SelectMany(
+                    p => db.OrderDetails.Where(orderDet => orderDet.Product == p));
+                db.OrderDetails.RemoveRange(orderDetails);
+
                 await db.SaveChangesAsync();
                 return true;
             }

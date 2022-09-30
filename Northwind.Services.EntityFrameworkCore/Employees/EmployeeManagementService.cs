@@ -49,6 +49,25 @@ namespace Northwind.Services.EntityFrameworkCore.Employees
             if (employee != null)
             {
                 db.Employees.Remove(employee);
+
+                var orders = db.Orders.Where(order => order.Employee == employee);
+                db.Orders.RemoveRange(orders);
+
+                var orderDetails = orders.SelectMany(
+                    o => db.OrderDetails.Where(orderDet => orderDet.Order == o));
+                db.OrderDetails.RemoveRange(orderDetails);
+
+
+                var empl = db.Employees.Include(e => e.Territories).SingleOrDefault(e => e.EmployeeId == employeeId);
+                if (empl != null)
+                {
+                    foreach (var territory in empl.Territories
+                        .Where(t => t.Employees.Contains(empl)).ToList())
+                    {
+                        empl.Territories.Remove(territory);
+                    }
+                }
+
                 await db.SaveChangesAsync();
                 return true;
             }
