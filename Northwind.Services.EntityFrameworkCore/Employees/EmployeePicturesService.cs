@@ -7,20 +7,19 @@ namespace Northwind.Services.EntityFrameworkCore.Employees
 {
     public class EmployeePicturesService : IEmployeePicturesService
     {
-        private readonly string connectionString;
+        private readonly Models.NorthwindContext context;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EmployeePicturesService"/> class.
         /// </summary>
-        public EmployeePicturesService(string connectionString)
+        public EmployeePicturesService(Models.NorthwindContext context)
         {
-            this.connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+            this.context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         public async Task<Stream> GetEmployeePictureAsync(int employeeId)
         {
-            await using Models.NorthwindContext db = new Models.NorthwindContext(this.connectionString);
-            var employee = await db.Employees.FindAsync(employeeId);
+            var employee = await this.context.Employees.FindAsync(employeeId);
             if (employee?.Photo is null)
             {
                 return null;
@@ -31,8 +30,7 @@ namespace Northwind.Services.EntityFrameworkCore.Employees
 
         public async Task<bool> DeleteEmployeePictureAsync(int employeeId)
         {
-            await using Models.NorthwindContext db = new Models.NorthwindContext(this.connectionString);
-            var employee = await db.Employees.FindAsync(employeeId);
+            var employee = await this.context.Employees.FindAsync(employeeId);
             if (employee is null)
             {
                 return false;
@@ -40,7 +38,7 @@ namespace Northwind.Services.EntityFrameworkCore.Employees
 
             employee.Photo = null;
 
-            await db.SaveChangesAsync();
+            await this.context.SaveChangesAsync();
             return true;
         }
 
@@ -48,8 +46,7 @@ namespace Northwind.Services.EntityFrameworkCore.Employees
         {
             _ = stream ?? throw new ArgumentNullException(nameof(stream));
 
-            await using Models.NorthwindContext db = new Models.NorthwindContext(this.connectionString);
-            var employee = await db.Employees.FindAsync(employeeId);
+            var employee = await this.context.Employees.FindAsync(employeeId);
             if (employee is null)
             {
                 return false;
@@ -59,7 +56,7 @@ namespace Northwind.Services.EntityFrameworkCore.Employees
             await stream.CopyToAsync(memoryStream);
             memoryStream.ToArray().CopyTo(employee.Photo, 78);
 
-            await db.SaveChangesAsync();
+            await this.context.SaveChangesAsync();
 
             return true;
         }

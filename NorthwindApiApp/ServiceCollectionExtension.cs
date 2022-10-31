@@ -35,7 +35,7 @@ namespace NorthwindApiApp
                 .AddTransient<IProductCategoryPicturesService, EntityFramework.Products.ProductCategoryPicturesService>()
                 .AddTransient<IEmployeeManagementService, EntityFramework.Employees.EmployeeManagementService>()
                 .AddTransient<IEmployeePicturesService, EntityFramework.Employees.EmployeePicturesService>()
-                .AddScoped(s => configuration.GetConnectionString("SqlConnection"))
+                .AddSingleton(s => new EntityFramework.Models.NorthwindContext(configuration.GetConnectionString("SqlConnection")))
                 .AddAutoMapper(typeof(EntityFramework.MappingProfiles.MappingProfile));
         }
 

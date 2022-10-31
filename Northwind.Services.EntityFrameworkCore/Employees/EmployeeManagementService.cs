@@ -13,15 +13,15 @@ namespace Northwind.Services.EntityFrameworkCore.Employees
     /// </summary>
     public class EmployeeManagementService : IEmployeeManagementService
     {
-        private readonly string connectionString;
+        private readonly Models.NorthwindContext context;
         private readonly IMapper mapper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EmployeeManagementService"/> class.
         /// </summary>
-        public EmployeeManagementService(string connectionString, IMapper mapper)
+        public EmployeeManagementService(Models.NorthwindContext context, IMapper mapper)
         {
-            this.connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+            this.context = context ?? throw new ArgumentNullException(nameof(context));
             this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
@@ -29,30 +29,27 @@ namespace Northwind.Services.EntityFrameworkCore.Employees
         {
             _ = employee ?? throw new ArgumentNullException(nameof(employee));
 
-            await using Models.NorthwindContext db = new Models.NorthwindContext(this.connectionString);
-            await db.Employees.AddAsync(this.mapper.Map<Models.Employee>(employee));
-            await db.SaveChangesAsync();
+            await this.context.Employees.AddAsync(this.mapper.Map<Models.Employee>(employee));
+            await this.context.SaveChangesAsync();
             return employee.EmployeeID;
         }
 
         public async Task<bool> DeleteEmployeeAsync(int employeeId)
         {
-            await using Models.NorthwindContext db = new Models.NorthwindContext(this.connectionString);
-
-            var employee = await db.Employees.FindAsync(employeeId);
+            var employee = await this.context.Employees.FindAsync(employeeId);
             if (employee != null)
             {
-                db.Employees.Remove(employee);
+                this.context.Employees.Remove(employee);
 
-                var orders = db.Orders.Where(order => order.Employee == employee);
-                db.Orders.RemoveRange(orders);
+                var orders = this.context.Orders.Where(order => order.Employee == employee);
+                this.context.Orders.RemoveRange(orders);
 
                 var orderDetails = orders.SelectMany(
-                    o => db.OrderDetails.Where(orderDet => orderDet.Order == o));
-                db.OrderDetails.RemoveRange(orderDetails);
+                    o => this.context.OrderDetails.Where(orderDet => orderDet.Order == o));
+                this.context.OrderDetails.RemoveRange(orderDetails);
 
 
-                var empl = db.Employees.Include(e => e.Territories).SingleOrDefault(e => e.EmployeeId == employeeId);
+                var empl = this.context.Employees.Include(e => e.Territories).SingleOrDefault(e => e.EmployeeId == employeeId);
                 if (empl != null)
                 {
                     foreach (var territory in empl.Territories
@@ -62,7 +59,7 @@ namespace Northwind.Services.EntityFrameworkCore.Employees
                     }
                 }
 
-                await db.SaveChangesAsync();
+                await this.context.SaveChangesAsync();
                 return true;
             }
 
@@ -71,9 +68,7 @@ namespace Northwind.Services.EntityFrameworkCore.Employees
 
         public async IAsyncEnumerable<Employee> GetEmployeesAsync(int offset, int limit)
         {
-            await using Models.NorthwindContext db = new Models.NorthwindContext(this.connectionString);
-
-            var employees = db.Employees
+            var employees = this.context.Employees
                 .Skip(offset)
                 .Take(limit)
                 .Select(e => this.mapper.Map<Employee>(e));
@@ -86,9 +81,7 @@ namespace Northwind.Services.EntityFrameworkCore.Employees
 
         public async Task<Employee> GetEmployeeAsync(int employeeId)
         {
-            await using Models.NorthwindContext db = new Models.NorthwindContext(this.connectionString);
-
-            var contextEmployee = await db.Employees.FindAsync(employeeId);
+            var contextEmployee = await this.context.Employees.FindAsync(employeeId);
             if (contextEmployee is null)
             {
                 return null;
@@ -101,9 +94,7 @@ namespace Northwind.Services.EntityFrameworkCore.Employees
         {
             _ = employee ?? throw new ArgumentNullException(nameof(employee));
 
-            await using Models.NorthwindContext db = new Models.NorthwindContext(this.connectionString);
-
-            var contextEmployee = await db.Employees.FindAsync(employeeId);
+            var contextEmployee = await this.context.Employees.FindAsync(employeeId);
             if (contextEmployee is null)
             {
                 return false;
@@ -127,7 +118,7 @@ namespace Northwind.Services.EntityFrameworkCore.Employees
             contextEmployee.Title = employee.Title;
             contextEmployee.TitleOfCourtesy = employee.TitleOfCourtesy;
 
-            await db.SaveChangesAsync();
+            await this.context.SaveChangesAsync();
             return true;
         }
     }

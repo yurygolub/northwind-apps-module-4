@@ -7,21 +7,19 @@ namespace Northwind.Services.EntityFrameworkCore.Products
 {
     public class ProductCategoryPicturesService : IProductCategoryPicturesService
     {
-        private readonly string connectionString;
+        private readonly Models.NorthwindContext context;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProductCategoryManagementService"/> class.
         /// </summary>
-        public ProductCategoryPicturesService(string connectionString)
+        public ProductCategoryPicturesService(Models.NorthwindContext context)
         {
-            this.connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+            this.context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         public async Task<Stream> GetProductCategoryPictureAsync(int categoryId)
         {
-            await using Models.NorthwindContext db = new Models.NorthwindContext(this.connectionString);
-
-            var contextCategory = await db.Categories.FindAsync(categoryId);
+            var contextCategory = await this.context.Categories.FindAsync(categoryId);
             if (contextCategory?.Picture is null)
             {
                 return null;
@@ -32,9 +30,7 @@ namespace Northwind.Services.EntityFrameworkCore.Products
 
         public async Task<bool> DeleteProductCategoryPictureAsync(int categoryId)
         {
-            await using Models.NorthwindContext db = new Models.NorthwindContext(this.connectionString);
-
-            var contextCategory = await db.Categories.FindAsync(categoryId);
+            var contextCategory = await this.context.Categories.FindAsync(categoryId);
             if (contextCategory is null)
             {
                 return false;
@@ -42,7 +38,7 @@ namespace Northwind.Services.EntityFrameworkCore.Products
 
             contextCategory.Picture = null;
 
-            await db.SaveChangesAsync();
+            await this.context.SaveChangesAsync();
             return true;
         }
 
@@ -50,9 +46,7 @@ namespace Northwind.Services.EntityFrameworkCore.Products
         {
             _ = stream ?? throw new ArgumentNullException(nameof(stream));
 
-            await using Models.NorthwindContext db = new Models.NorthwindContext(this.connectionString);
-
-            var contextCategory = await db.Categories.FindAsync(categoryId);
+            var contextCategory = await this.context.Categories.FindAsync(categoryId);
             if (contextCategory is null)
             {
                 return false;
@@ -62,7 +56,7 @@ namespace Northwind.Services.EntityFrameworkCore.Products
             await stream.CopyToAsync(memoryStream);
             memoryStream.ToArray().CopyTo(contextCategory.Picture, 78);
 
-            await db.SaveChangesAsync();
+            await this.context.SaveChangesAsync();
             return true;
         }
     }

@@ -10,15 +10,15 @@ namespace Northwind.Services.EntityFrameworkCore.Products
 {
     public class ProductManagementService : IProductManagementService
     {
-        private readonly string connectionString;
+        private readonly Models.NorthwindContext context;
         private readonly IMapper mapper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProductManagementService"/> class.
         /// </summary>
-        public ProductManagementService(string connectionString, IMapper mapper)
+        public ProductManagementService(Models.NorthwindContext context, IMapper mapper)
         {
-            this.connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+            this.context = context ?? throw new ArgumentNullException(nameof(context));
             this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
@@ -26,25 +26,22 @@ namespace Northwind.Services.EntityFrameworkCore.Products
         {
             _ = product ?? throw new ArgumentNullException(nameof(product));
 
-            await using Models.NorthwindContext db = new Models.NorthwindContext(this.connectionString);
-            await db.Products.AddAsync(this.mapper.Map<Models.Product>(product));
-            await db.SaveChangesAsync();
+            await this.context.Products.AddAsync(this.mapper.Map<Models.Product>(product));
+            await this.context.SaveChangesAsync();
             return product.Id;
         }
 
         public async Task<bool> DeleteProductAsync(int productId)
         {
-            await using Models.NorthwindContext db = new Models.NorthwindContext(this.connectionString);
-
-            var product = await db.Products.FindAsync(productId);
+            var product = await this.context.Products.FindAsync(productId);
             if (product != null)
             {
-                db.Products.Remove(product);
+                this.context.Products.Remove(product);
 
-                var orderDetails = db.OrderDetails.Where(orderDet => orderDet.Product == product);
-                db.OrderDetails.RemoveRange(orderDetails);
+                var orderDetails = this.context.OrderDetails.Where(orderDet => orderDet.Product == product);
+                this.context.OrderDetails.RemoveRange(orderDetails);
 
-                await db.SaveChangesAsync();
+                await this.context.SaveChangesAsync();
                 return true;
             }
 
@@ -55,9 +52,7 @@ namespace Northwind.Services.EntityFrameworkCore.Products
         {
             _ = names ?? throw new ArgumentNullException(nameof(names));
 
-            await using Models.NorthwindContext db = new Models.NorthwindContext(this.connectionString);
-
-            var products = from product in db.Products
+            var products = from product in this.context.Products
                            from name in names
                            where product.ProductName == name
                            select this.mapper.Map<Product>(product);
@@ -70,9 +65,7 @@ namespace Northwind.Services.EntityFrameworkCore.Products
 
         public async IAsyncEnumerable<Product> GetProductsAsync(int offset, int limit)
         {
-            await using Models.NorthwindContext db = new Models.NorthwindContext(this.connectionString);
-
-            var products = db.Products
+            var products = this.context.Products
                 .Skip(offset)
                 .Take(limit)
                 .Select(p => this.mapper.Map<Product>(p));
@@ -85,9 +78,7 @@ namespace Northwind.Services.EntityFrameworkCore.Products
 
         public async IAsyncEnumerable<Product> GetProductsForCategoryAsync(int categoryId)
         {
-            await using Models.NorthwindContext db = new Models.NorthwindContext(this.connectionString);
-
-            var products = from product in db.Products
+            var products = from product in this.context.Products
                            where product.CategoryId == categoryId
                            select this.mapper.Map<Product>(product);
 
@@ -99,9 +90,7 @@ namespace Northwind.Services.EntityFrameworkCore.Products
 
         public async Task<Product> GetProductAsync(int productId)
         {
-            await using Models.NorthwindContext db = new Models.NorthwindContext(this.connectionString);
-
-            var contextProduct = await db.Products.FindAsync(productId);
+            var contextProduct = await this.context.Products.FindAsync(productId);
             if (contextProduct is null)
             {
                 return null;
@@ -114,9 +103,7 @@ namespace Northwind.Services.EntityFrameworkCore.Products
         {
             _ = product ?? throw new ArgumentNullException(nameof(product));
 
-            await using Models.NorthwindContext db = new Models.NorthwindContext(this.connectionString);
-
-            var contextProduct = await db.Products.FindAsync(productId);
+            var contextProduct = await this.context.Products.FindAsync(productId);
             if (contextProduct is null)
             {
                 return false;
@@ -132,7 +119,7 @@ namespace Northwind.Services.EntityFrameworkCore.Products
             contextProduct.UnitsInStock = product.UnitsInStock;
             contextProduct.UnitsOnOrder = product.UnitsOnOrder;
 
-            await db.SaveChangesAsync();
+            await this.context.SaveChangesAsync();
             return true;
         }
     }
