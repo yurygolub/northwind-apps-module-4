@@ -64,9 +64,9 @@ namespace Northwind.Services.EntityFrameworkCore.Products
             await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
 
             var categories = from category in db.Categories
-                           from name in names
-                           where category.CategoryName == name
-                           select this.mapper.Map<ProductCategory>(category);
+                             from name in names
+                             where category.CategoryName == name
+                             select this.mapper.Map<ProductCategory>(category);
 
             await foreach (var category in categories.AsAsyncEnumerable())
             {
@@ -79,9 +79,9 @@ namespace Northwind.Services.EntityFrameworkCore.Products
             await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
 
             var categories = db.Categories
-                    .Skip(offset)
-                    .Take(limit)
-                    .Select(c => this.mapper.Map<ProductCategory>(c));
+                .Skip(offset)
+                .Take(limit)
+                .Select(c => this.mapper.Map<ProductCategory>(c));
 
             await foreach (var category in categories.AsAsyncEnumerable())
             {

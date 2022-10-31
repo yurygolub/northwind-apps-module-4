@@ -52,9 +52,9 @@ namespace Northwind.Services.InMemory.Products
             _ = names ?? throw new ArgumentNullException(nameof(names));
 
             var categories = from category in this.northwindContext.ProductCategories
-                           from name in names
-                           where category.Name == name
-                           select this.mapper.Map<ProductCategory>(category);
+                             from name in names
+                             where category.Name == name
+                             select this.mapper.Map<ProductCategory>(category);
 
             await foreach (var category in categories.AsAsyncEnumerable())
             {
@@ -65,9 +65,9 @@ namespace Northwind.Services.InMemory.Products
         public async IAsyncEnumerable<ProductCategory> GetCategoriesAsync(int offset, int limit)
         {
             var categories = this.northwindContext.ProductCategories
-                    .Skip(offset)
-                    .Take(limit)
-                    .Select(c => this.mapper.Map<ProductCategory>(c));
+                .Skip(offset)
+                .Take(limit)
+                .Select(c => this.mapper.Map<ProductCategory>(c));
 
             await foreach (var category in categories.AsAsyncEnumerable())
             {

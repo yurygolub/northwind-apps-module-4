@@ -65,9 +65,9 @@ namespace Northwind.Services.InMemory.Products
         public async IAsyncEnumerable<Product> GetProductsAsync(int offset, int limit)
         {
             var products = this.northwindContext.Products
-                    .Skip(offset)
-                    .Take(limit)
-                    .Select(p => this.mapper.Map<Product>(p));
+                .Skip(offset)
+                .Take(limit)
+                .Select(p => this.mapper.Map<Product>(p));
 
             await foreach (var product in products.AsAsyncEnumerable())
             {

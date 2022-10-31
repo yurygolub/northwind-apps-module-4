@@ -75,9 +75,9 @@ namespace Northwind.Services.EntityFrameworkCore.Employees
             await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
 
             var employees = db.Employees
-                    .Skip(offset)
-                    .Take(limit)
-                    .Select(e => this.mapper.Map<Employee>(e));
+                .Skip(offset)
+                .Take(limit)
+                .Select(e => this.mapper.Map<Employee>(e));
 
             await foreach (var employee in employees.AsAsyncEnumerable())
             {
