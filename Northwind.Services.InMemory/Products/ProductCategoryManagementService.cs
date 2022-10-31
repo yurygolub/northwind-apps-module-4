@@ -34,7 +34,7 @@ namespace Northwind.Services.InMemory.Products
             return productCategory.Id;
         }
 
-        public async Task<bool> DestroyCategoryAsync(int categoryId)
+        public async Task<bool> DeleteCategoryAsync(int categoryId)
         {
             var category = await this.northwindContext.ProductCategories.FindAsync(categoryId);
             if (category != null)

@@ -31,11 +31,11 @@ namespace Northwind.Services.Employees
         Task<int> CreateEmployeeAsync(Employee employee);
 
         /// <summary>
-        /// Destroys an existed employee.
+        /// Deletes an existed employee.
         /// </summary>
         /// <param name="employeeId">An employee identifier.</param>
         /// <returns>True if an employee is destroyed; otherwise false.</returns>
-        Task<bool> DestroyEmployeeAsync(int employeeId);
+        Task<bool> DeleteEmployeeAsync(int employeeId);
 
         /// <summary>
         /// Updates an employee.

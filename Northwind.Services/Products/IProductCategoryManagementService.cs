@@ -31,11 +31,11 @@ namespace Northwind.Services.Products
         Task<int> CreateCategoryAsync(ProductCategory productCategory);
 
         /// <summary>
-        /// Destroys an existed product category.
+        /// Deletes an existed product category.
         /// </summary>
         /// <param name="categoryId">A product category identifier.</param>
         /// <returns>True if a product category is destroyed; otherwise false.</returns>
-        Task<bool> DestroyCategoryAsync(int categoryId);
+        Task<bool> DeleteCategoryAsync(int categoryId);
 
         /// <summary>
         /// Gets product categories with specified names.

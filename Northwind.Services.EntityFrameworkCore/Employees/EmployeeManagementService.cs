@@ -36,7 +36,7 @@ namespace Northwind.Services.EntityFrameworkCore.Employees
             return employee.EmployeeID;
         }
 
-        public async Task<bool> DestroyEmployeeAsync(int employeeId)
+        public async Task<bool> DeleteEmployeeAsync(int employeeId)
         {
             await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
 

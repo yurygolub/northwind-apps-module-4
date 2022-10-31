@@ -33,7 +33,7 @@ namespace Northwind.Services.EntityFrameworkCore.Products
             return product.Id;
         }
 
-        public async Task<bool> DestroyProductAsync(int productId)
+        public async Task<bool> DeleteProductAsync(int productId)
         {
             await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
 

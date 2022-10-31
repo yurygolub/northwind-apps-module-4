@@ -31,11 +31,11 @@ namespace Northwind.Services.Products
         Task<int> CreateProductAsync(Product product);
 
         /// <summary>
-        /// Destroys an existed product.
+        /// Deletes an existed product.
         /// </summary>
         /// <param name="productId">A product identifier.</param>
         /// <returns>True if a product is destroyed; otherwise false.</returns>
-        Task<bool> DestroyProductAsync(int productId);
+        Task<bool> DeleteProductAsync(int productId);
 
         /// <summary>
         /// Gets product with specified names.

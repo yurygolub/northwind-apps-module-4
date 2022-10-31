@@ -34,7 +34,7 @@ namespace Northwind.Services.EntityFrameworkCore.Products
             return productCategory.Id;
         }
 
-        public async Task<bool> DestroyCategoryAsync(int categoryId)
+        public async Task<bool> DeleteCategoryAsync(int categoryId)
         {
             await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
 

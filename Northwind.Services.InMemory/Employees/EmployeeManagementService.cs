@@ -37,7 +37,7 @@ namespace Northwind.Services.InMemory.Employees
             return employee.EmployeeID;
         }
 
-        public async Task<bool> DestroyEmployeeAsync(int employeeId)
+        public async Task<bool> DeleteEmployeeAsync(int employeeId)
         {
             var employee = await this.northwindContext.Employees.FindAsync(employeeId);
             if (employee != null)

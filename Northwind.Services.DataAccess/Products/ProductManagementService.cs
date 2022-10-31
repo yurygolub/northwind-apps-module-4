@@ -40,7 +40,7 @@ namespace Northwind.Services.DataAccess.Products
         }
 
         /// <inheritdoc/>
-        public async Task<bool> DestroyProductAsync(int productId)
+        public async Task<bool> DeleteProductAsync(int productId)
         {
             return await this.dataAccessObject.DeleteProductAsync(productId);
         }

@@ -60,7 +60,7 @@ namespace NorthwindApiApp.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProductCategoryAsync(int id)
         {
-            if (!await this.managementService.DestroyCategoryAsync(id))
+            if (!await this.managementService.DeleteCategoryAsync(id))
             {
                 return this.NotFound();
             }

@@ -60,7 +60,7 @@ namespace NorthwindApiApp.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEmployeeAsync(int id)
         {
-            if (!await this.managementService.DestroyEmployeeAsync(id))
+            if (!await this.managementService.DeleteEmployeeAsync(id))
             {
                 return this.NotFound();
             }

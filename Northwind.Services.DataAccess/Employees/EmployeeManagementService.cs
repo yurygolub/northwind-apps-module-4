@@ -38,7 +38,7 @@ namespace Northwind.Services.DataAccess.Employees
         }
 
         /// <inheritdoc/>
-        public async Task<bool> DestroyEmployeeAsync(int employeeId)
+        public async Task<bool> DeleteEmployeeAsync(int employeeId)
         {
             return await this.dataAccessObject.DeleteEmployeeAsync(employeeId);
         }
