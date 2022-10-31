@@ -28,10 +28,7 @@ namespace Northwind.DataAccess.SqlServer.Employees
         /// <inheritdoc/>
         public async Task<int> InsertEmployeeAsync(EmployeeTransferObject employee)
         {
-            if (employee == null)
-            {
-                throw new ArgumentNullException(nameof(employee));
-            }
+            _ = employee ?? throw new ArgumentNullException(nameof(employee));
 
             using var command = new SqlCommand("InsertEmployee", this.connection)
             {
@@ -147,10 +144,7 @@ namespace Northwind.DataAccess.SqlServer.Employees
         /// <inheritdoc/>
         public async Task<bool> UpdateEmployeeAsync(int employeeId, EmployeeTransferObject employee)
         {
-            if (employee == null)
-            {
-                throw new ArgumentNullException(nameof(employee));
-            }
+            _ = employee ?? throw new ArgumentNullException(nameof(employee));
 
             using var command = new SqlCommand("UpdateEmployee", this.connection)
             {

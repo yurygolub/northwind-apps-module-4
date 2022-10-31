@@ -22,22 +22,13 @@ namespace Northwind.Services.EntityFrameworkCore.Employees
         /// </summary>
         public EmployeeManagementService(string connectionString, IMapper mapper)
         {
-            if (connectionString is null)
-            {
-                throw new ArgumentNullException(nameof(connectionString));
-            }
-
+            this.connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
             this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-
-            this.connectionString = connectionString;
         }
 
         public async Task<int> CreateEmployeeAsync(Employee employee)
         {
-            if (employee is null)
-            {
-                throw new ArgumentNullException(nameof(employee));
-            }
+            _ = employee ?? throw new ArgumentNullException(nameof(employee));
 
             await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
             await db.Employees.AddAsync(this.mapper.Map<Context.Employee>(employee));
@@ -109,10 +100,7 @@ namespace Northwind.Services.EntityFrameworkCore.Employees
 
         public async Task<bool> UpdateEmployeeAsync(int employeeId, Employee employee)
         {
-            if (employee is null)
-            {
-                throw new ArgumentNullException(nameof(employee));
-            }
+            _ = employee ?? throw new ArgumentNullException(nameof(employee));
 
             await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
 

@@ -17,10 +17,7 @@ namespace Northwind.Services.DataAccess.Products
         /// <param name="northwindDataAccessFactory">Factory for creating Northwind DAO.</param>
         public ProductCategoryPicturesService(NorthwindDataAccessFactory northwindDataAccessFactory)
         {
-            if (northwindDataAccessFactory is null)
-            {
-                throw new ArgumentNullException(nameof(northwindDataAccessFactory));
-            }
+            _ = northwindDataAccessFactory ?? throw new ArgumentNullException(nameof(northwindDataAccessFactory));
 
             this.dataAccessObject = northwindDataAccessFactory.GetProductCategoryDataAccessObject();
         }
@@ -67,10 +64,7 @@ namespace Northwind.Services.DataAccess.Products
 
         public async Task<bool> UpdateProductCategoryPictureAsync(int categoryId, Stream stream)
         {
-            if (stream is null)
-            {
-                throw new ArgumentNullException(nameof(stream));
-            }
+            _ = stream ?? throw new ArgumentNullException(nameof(stream));
 
             var category = await this.dataAccessObject.FindProductCategoryAsync(categoryId);
             if (category is null)

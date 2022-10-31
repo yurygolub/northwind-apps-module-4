@@ -29,10 +29,7 @@ namespace Northwind.DataAccess.SqlServer.Products
         /// <inheritdoc/>
         public async Task<int> InsertProductAsync(ProductTransferObject product)
         {
-            if (product == null)
-            {
-                throw new ArgumentNullException(nameof(product));
-            }
+            _ = product ?? throw new ArgumentNullException(nameof(product));
 
             await using var command = new SqlCommand("InsertProduct", this.connection)
             {
@@ -148,10 +145,7 @@ namespace Northwind.DataAccess.SqlServer.Products
         /// <inheritdoc/>
         public async IAsyncEnumerable<ProductTransferObject> SelectProductsByNameAsync(IEnumerable<string> productNames)
         {
-            if (productNames == null)
-            {
-                throw new ArgumentNullException(nameof(productNames));
-            }
+            _ = productNames ?? throw new ArgumentNullException(nameof(productNames));
 
             if (productNames.Any())
             {
@@ -192,10 +186,7 @@ namespace Northwind.DataAccess.SqlServer.Products
         /// <inheritdoc/>
         public async Task<bool> UpdateProductAsync(int productId, ProductTransferObject product)
         {
-            if (product == null)
-            {
-                throw new ArgumentNullException(nameof(product));
-            }
+            _ = product ?? throw new ArgumentNullException(nameof(product));
 
             await using var command = new SqlCommand("UpdateProduct", this.connection)
             {
@@ -217,10 +208,7 @@ namespace Northwind.DataAccess.SqlServer.Products
         /// <inheritdoc/>
         public async IAsyncEnumerable<ProductTransferObject> SelectProductByCategoryAsync(IEnumerable<int> collectionOfCategoryId)
         {
-            if (collectionOfCategoryId == null)
-            {
-                throw new ArgumentNullException(nameof(collectionOfCategoryId));
-            }
+            _ = collectionOfCategoryId ?? throw new ArgumentNullException(nameof(collectionOfCategoryId));
 
             foreach (var categoryId in collectionOfCategoryId)
             {

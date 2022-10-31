@@ -25,11 +25,7 @@ namespace Northwind.Services.DataAccess.Products
         /// <param name="mapper">Mapper for entity mapping.</param>
         public ProductManagementService(NorthwindDataAccessFactory northwindDataAccessFactory, IMapper mapper)
         {
-            if (northwindDataAccessFactory is null)
-            {
-                throw new ArgumentNullException(nameof(northwindDataAccessFactory));
-            }
-
+            _ = northwindDataAccessFactory ?? throw new ArgumentNullException(nameof(northwindDataAccessFactory));
             this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
 
             this.dataAccessObject = northwindDataAccessFactory.GetProductDataAccessObject();
@@ -38,10 +34,7 @@ namespace Northwind.Services.DataAccess.Products
         /// <inheritdoc/>
         public async Task<int> CreateProductAsync(Product product)
         {
-            if (product is null)
-            {
-                throw new ArgumentNullException(nameof(product));
-            }
+            _ = product ?? throw new ArgumentNullException(nameof(product));
 
             return await this.dataAccessObject.InsertProductAsync(this.mapper.Map<ProductTransferObject>(product));
         }
@@ -60,10 +53,7 @@ namespace Northwind.Services.DataAccess.Products
         /// <inheritdoc/>
         public async IAsyncEnumerable<Product> GetProductsByNameAsync(IEnumerable<string> names)
         {
-            if (names is null)
-            {
-                throw new ArgumentNullException(nameof(names));
-            }
+            _ = names ?? throw new ArgumentNullException(nameof(names));
 
             var products = this.dataAccessObject.SelectProductsByNameAsync(names);
             await foreach (var product in products)
@@ -109,10 +99,7 @@ namespace Northwind.Services.DataAccess.Products
         /// <inheritdoc/>
         public async Task<bool> UpdateProductAsync(int productId, Product product)
         {
-            if (product is null)
-            {
-                throw new ArgumentNullException(nameof(product));
-            }
+            _ = product ?? throw new ArgumentNullException(nameof(product));
 
             if (await this.dataAccessObject.UpdateProductAsync(productId, this.mapper.Map<ProductTransferObject>(product)))
             {

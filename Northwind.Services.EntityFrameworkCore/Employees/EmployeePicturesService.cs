@@ -15,12 +15,7 @@ namespace Northwind.Services.EntityFrameworkCore.Employees
         /// </summary>
         public EmployeePicturesService(string connectionString)
         {
-            if (connectionString is null)
-            {
-                throw new ArgumentNullException(nameof(connectionString));
-            }
-
-            this.connectionString = connectionString;
+            this.connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
         }
 
         public async Task<Stream> GetEmployeePictureAsync(int employeeId)
@@ -52,10 +47,7 @@ namespace Northwind.Services.EntityFrameworkCore.Employees
 
         public async Task<bool> UpdateEmployeePictureAsync(int employeeId, Stream stream)
         {
-            if (stream is null)
-            {
-                throw new ArgumentNullException(nameof(stream));
-            }
+            _ = stream ?? throw new ArgumentNullException(nameof(stream));
 
             await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
             var employee = await db.Employees.FindAsync(employeeId);

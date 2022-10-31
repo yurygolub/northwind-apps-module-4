@@ -19,22 +19,13 @@ namespace Northwind.Services.EntityFrameworkCore.Products
         /// </summary>
         public ProductManagementService(string connectionString, IMapper mapper)
         {
-            if (connectionString is null)
-            {
-                throw new ArgumentNullException(nameof(connectionString));
-            }
-
+            this.connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
             this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-
-            this.connectionString = connectionString;
         }
 
         public async Task<int> CreateProductAsync(Product product)
         {
-            if (product is null)
-            {
-                throw new ArgumentNullException(nameof(product));
-            }
+            _ = product ?? throw new ArgumentNullException(nameof(product));
 
             await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
             await db.Products.AddAsync(this.mapper.Map<Models.Product>(product));
@@ -63,10 +54,7 @@ namespace Northwind.Services.EntityFrameworkCore.Products
 
         public async IAsyncEnumerable<Product> GetProductsByNameAsync(IEnumerable<string> names)
         {
-            if (names is null)
-            {
-                throw new ArgumentNullException(nameof(names));
-            }
+            _ = names ?? throw new ArgumentNullException(nameof(names));
 
             await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
 
@@ -125,10 +113,7 @@ namespace Northwind.Services.EntityFrameworkCore.Products
 
         public async Task<bool> UpdateProductAsync(int productId, Product product)
         {
-            if (product is null)
-            {
-                throw new ArgumentNullException(nameof(product));
-            }
+            _ = product ?? throw new ArgumentNullException(nameof(product));
 
             await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
 

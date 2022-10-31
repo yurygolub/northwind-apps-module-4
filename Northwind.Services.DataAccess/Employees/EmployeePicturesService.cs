@@ -17,10 +17,7 @@ namespace Northwind.Services.DataAccess.Employees
         /// <param name="northwindDataAccessFactory">Factory for creating Northwind DAO.</param>
         public EmployeePicturesService(NorthwindDataAccessFactory northwindDataAccessFactory)
         {
-            if (northwindDataAccessFactory is null)
-            {
-                throw new ArgumentNullException(nameof(northwindDataAccessFactory));
-            }
+            _ = northwindDataAccessFactory ?? throw new ArgumentNullException(nameof(northwindDataAccessFactory));
 
             this.dataAccessObject = northwindDataAccessFactory.GetEmployeeDataAccessObject();
         }
@@ -63,10 +60,7 @@ namespace Northwind.Services.DataAccess.Employees
 
         public async Task<bool> UpdateEmployeePictureAsync(int employeeId, Stream stream)
         {
-            if (stream is null)
-            {
-                throw new ArgumentNullException(nameof(stream));
-            }
+            _ = stream ?? throw new ArgumentNullException(nameof(stream));
 
             var employee = await this.dataAccessObject.FindEmployeeAsync(employeeId);
             if (employee is null)

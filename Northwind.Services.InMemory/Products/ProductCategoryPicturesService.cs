@@ -16,12 +16,7 @@ namespace Northwind.Services.InMemory.Products
         /// <exception cref="ArgumentNullException">Thrown if northwindContext is null.</exception>
         public ProductCategoryPicturesService(NorthwindContext northwindContext)
         {
-            if (northwindContext is null)
-            {
-                throw new ArgumentNullException(nameof(northwindContext));
-            }
-
-            this.northwindContext = northwindContext;
+            this.northwindContext = northwindContext ?? throw new ArgumentNullException(nameof(northwindContext));
         }
 
         public async Task<Stream> GetProductCategoryPictureAsync(int categoryId)
@@ -51,10 +46,7 @@ namespace Northwind.Services.InMemory.Products
 
         public async Task<bool> UpdateProductCategoryPictureAsync(int categoryId, Stream stream)
         {
-            if (stream is null)
-            {
-                throw new ArgumentNullException(nameof(stream));
-            }
+            _ = stream ?? throw new ArgumentNullException(nameof(stream));
 
             var contextCategory = await this.northwindContext.ProductCategories.FindAsync(categoryId);
             if (contextCategory is null)

@@ -24,22 +24,13 @@ namespace Northwind.Services.InMemory.Employees
         /// <exception cref="ArgumentNullException">Thrown if northwindContext is null.</exception>
         public EmployeeManagementService(NorthwindContext northwindContext, IMapper mapper)
         {
-            if (northwindContext is null)
-            {
-                throw new ArgumentNullException(nameof(northwindContext));
-            }
-
+            this.northwindContext = northwindContext ?? throw new ArgumentNullException(nameof(northwindContext));
             this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-
-            this.northwindContext = northwindContext;
         }
 
         public async Task<int> CreateEmployeeAsync(Employee employee)
         {
-            if (employee is null)
-            {
-                throw new ArgumentNullException(nameof(employee));
-            }
+            _ = employee ?? throw new ArgumentNullException(nameof(employee));
 
             await this.northwindContext.Employees.AddAsync(this.mapper.Map<Entities.Employee>(employee));
             await this.northwindContext.SaveChangesAsync();
@@ -85,10 +76,7 @@ namespace Northwind.Services.InMemory.Employees
 
         public async Task<bool> UpdateEmployeeAsync(int employeeId, Employee employee)
         {
-            if (employee is null)
-            {
-                throw new ArgumentNullException(nameof(employee));
-            }
+            _ = employee ?? throw new ArgumentNullException(nameof(employee));
 
             var contextEmployee = await this.northwindContext.Employees.FindAsync(employeeId);
             if (contextEmployee is null)

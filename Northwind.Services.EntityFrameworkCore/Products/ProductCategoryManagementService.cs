@@ -20,22 +20,13 @@ namespace Northwind.Services.EntityFrameworkCore.Products
         /// <param name="mapper">Mapper for entity mapping.</param>
         public ProductCategoryManagementService(string connectionString, IMapper mapper)
         {
-            if (connectionString is null)
-            {
-                throw new ArgumentNullException(nameof(connectionString));
-            }
-
+            this.connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
             this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-
-            this.connectionString = connectionString;
         }
 
         public async Task<int> CreateCategoryAsync(ProductCategory productCategory)
         {
-            if (productCategory is null)
-            {
-                throw new ArgumentNullException(nameof(productCategory));
-            }
+            _ = productCategory ?? throw new ArgumentNullException(nameof(productCategory));
 
             await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
             await db.Categories.AddAsync(this.mapper.Map<Context.Category>(productCategory));
@@ -68,10 +59,7 @@ namespace Northwind.Services.EntityFrameworkCore.Products
 
         public async IAsyncEnumerable<ProductCategory> GetCategoriesByNameAsync(IEnumerable<string> names)
         {
-            if (names is null)
-            {
-                throw new ArgumentNullException(nameof(names));
-            }
+            _ = names ?? throw new ArgumentNullException(nameof(names));
 
             await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
 
@@ -116,10 +104,7 @@ namespace Northwind.Services.EntityFrameworkCore.Products
 
         public async Task<bool> UpdateCategoryAsync(int categoryId, ProductCategory productCategory)
         {
-            if (productCategory is null)
-            {
-                throw new ArgumentNullException(nameof(productCategory));
-            }
+            _ = productCategory ?? throw new ArgumentNullException(nameof(productCategory));
 
             await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
 

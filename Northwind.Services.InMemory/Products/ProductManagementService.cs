@@ -21,22 +21,13 @@ namespace Northwind.Services.InMemory.Products
         /// <exception cref="ArgumentNullException">Thrown if northwindContext is null.</exception>
         public ProductManagementService(NorthwindContext northwindContext, IMapper mapper)
         {
-            if (northwindContext is null)
-            {
-                throw new ArgumentNullException(nameof(northwindContext));
-            }
-
+            this.northwindContext = northwindContext ?? throw new ArgumentNullException(nameof(northwindContext));
             this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-
-            this.northwindContext = northwindContext;
         }
 
         public async Task<int> CreateProductAsync(Product product)
         {
-            if (product is null)
-            {
-                throw new ArgumentNullException(nameof(product));
-            }
+            _ = product ?? throw new ArgumentNullException(nameof(product));
 
             await this.northwindContext.Products.AddAsync(this.mapper.Map<Entities.Product>(product));
             await this.northwindContext.SaveChangesAsync();
@@ -58,10 +49,7 @@ namespace Northwind.Services.InMemory.Products
 
         public async IAsyncEnumerable<Product> GetProductsByNameAsync(IEnumerable<string> names)
         {
-            if (names is null)
-            {
-                throw new ArgumentNullException(nameof(names));
-            }
+            _ = names ?? throw new ArgumentNullException(nameof(names));
 
             var products = from product in this.northwindContext.Products
                            from name in names
@@ -112,10 +100,7 @@ namespace Northwind.Services.InMemory.Products
 
         public async Task<bool> UpdateProductAsync(int productId, Product product)
         {
-            if (product is null)
-            {
-                throw new ArgumentNullException(nameof(product));
-            }
+            _ = product ?? throw new ArgumentNullException(nameof(product));
 
             var contextProduct = await this.northwindContext.Products.FindAsync(productId);
             if (contextProduct is null)

@@ -23,11 +23,7 @@ namespace Northwind.Services.DataAccess.Employees
         /// <param name="mapper">Mapper for entity mapping.</param>
         public EmployeeManagementService(NorthwindDataAccessFactory northwindDataAccessFactory, IMapper mapper)
         {
-            if (northwindDataAccessFactory is null)
-            {
-                throw new ArgumentNullException(nameof(northwindDataAccessFactory));
-            }
-
+            _ = northwindDataAccessFactory ?? throw new ArgumentNullException(nameof(northwindDataAccessFactory));
             this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
 
             this.dataAccessObject = northwindDataAccessFactory.GetEmployeeDataAccessObject();
@@ -36,10 +32,7 @@ namespace Northwind.Services.DataAccess.Employees
         /// <inheritdoc/>
         public async Task<int> CreateEmployeeAsync(Employee employee)
         {
-            if (employee is null)
-            {
-                throw new ArgumentNullException(nameof(employee));
-            }
+            _ = employee ?? throw new ArgumentNullException(nameof(employee));
 
             return await this.dataAccessObject.InsertEmployeeAsync(this.mapper.Map<EmployeeTransferObject>(employee));
         }
@@ -82,10 +75,7 @@ namespace Northwind.Services.DataAccess.Employees
         /// <inheritdoc/>
         public async Task<bool> UpdateEmployeeAsync(int employeeId, Employee employee)
         {
-            if (employee is null)
-            {
-                throw new ArgumentNullException(nameof(employee));
-            }
+            _ = employee ?? throw new ArgumentNullException(nameof(employee));
 
             if (await this.dataAccessObject.UpdateEmployeeAsync(employeeId, this.mapper.Map<EmployeeTransferObject>(employee)))
             {

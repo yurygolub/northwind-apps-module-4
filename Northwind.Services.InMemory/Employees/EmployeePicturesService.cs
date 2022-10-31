@@ -16,12 +16,7 @@ namespace Northwind.Services.InMemory.Employees
         /// <exception cref="ArgumentNullException">Thrown if northwindContext is null.</exception>
         public EmployeePicturesService(NorthwindContext northwindContext)
         {
-            if (northwindContext is null)
-            {
-                throw new ArgumentNullException(nameof(northwindContext));
-            }
-
-            this.northwindContext = northwindContext;
+            this.northwindContext = northwindContext ?? throw new ArgumentNullException(nameof(northwindContext));
         }
 
         public async Task<Stream> GetEmployeePictureAsync(int employeeId)
@@ -51,10 +46,7 @@ namespace Northwind.Services.InMemory.Employees
 
         public async Task<bool> UpdateEmployeePictureAsync(int employeeId, Stream stream)
         {
-            if (stream is null)
-            {
-                throw new ArgumentNullException(nameof(stream));
-            }
+            _ = stream ?? throw new ArgumentNullException(nameof(stream));
 
             var employee = await this.northwindContext.Employees.FindAsync(employeeId);
             if (employee is null)
