@@ -13,23 +13,23 @@ dotnet run
 
 #### Products
 
-| Operation        | HTTP Verb | URI                | Request body | Response body |
-| ---------------- | --------- | ------------------ | ------------ |  ------------ |
-| Create           | POST      | /api/products      |              |               |
-| Read (all items) | GET       | /api/products      |              |               |
-| Read (item)      | GET       | /api/products/{id} |              |               |
-| Update           | PUT       | /api/products/{id} |              |               |
-| Delete           | DELETE    | /api/products/{id} |              |               |
+| Operation        | HTTP Verb | URI                |
+| ---------------- | --------- | ------------------ |
+| Create           | POST      | /api/products      |
+| Read (all items) | GET       | /api/products      |
+| Read (item)      | GET       | /api/products/{id} |
+| Update           | PUT       | /api/products/{id} |
+| Delete           | DELETE    | /api/products/{id} |
 
 #### ProductCategories
 
-| Operation        | HTTP Verb | URI                  | Request body | Response body |
-| ---------------- | --------- | -------------------- | ------------ |  ------------ |
-| Create           | POST      | /api/categories      |              |               |
-| Read (all items) | GET       | /api/categories      |              |               |
-| Read (item)      | GET       | /api/categories/{id} |              |               |
-| Update           | PUT       | /api/categories/{id} |              |               |
-| Delete           | DELETE    | /api/categories/{id} |              |               |
+| Operation        | HTTP Verb | URI                  |
+| ---------------- | --------- | -------------------- |
+| Create           | POST      | /api/categories      |
+| Read (all items) | GET       | /api/categories      |
+| Read (item)      | GET       | /api/categories/{id} |
+| Update           | PUT       | /api/categories/{id} |
+| Delete           | DELETE    | /api/categories/{id} |
 
 | Operation        | HTTP Verb | URI                                  | Request body    | Response body  |
 | ---------------- | --------- | ------------------------------------ | --------------- | -------------- |
@@ -39,13 +39,13 @@ dotnet run
 
 #### Employees
 
-| Operation        | HTTP Verb | URI                 | Request body | Response body |
-| ---------------- | --------- | ------------------- | ------------ | ------------- |
-| Create           | POST      | /api/employees      |              |               |
-| Read (all items) | GET       | /api/employees      |              |               |
-| Read (item)      | GET       | /api/employees/{id} |              |               |
-| Update           | PUT       | /api/employees/{id} |              |               |
-| Delete           | DELETE    | /api/employees/{id} |              |               |
+| Operation        | HTTP Verb | URI                 |
+| ---------------- | --------- | ------------------- |
+| Create           | POST      | /api/employees      |
+| Read (all items) | GET       | /api/employees      |
+| Read (item)      | GET       | /api/employees/{id} |
+| Update           | PUT       | /api/employees/{id} |
+| Delete           | DELETE    | /api/employees/{id} |
 
 | Operation        | HTTP Verb | URI                               | Request body    | Response body  |
 | ---------------- | --------- | --------------------------------- | --------------- | -------------- |
