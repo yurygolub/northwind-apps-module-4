@@ -48,7 +48,7 @@ namespace NorthwindApiApp
                     break;
 
                 case "InMemory":
-                    services.AddInMemoryServices(this.Configuration);
+                    services.AddInMemoryServices();
                     break;
             }
 

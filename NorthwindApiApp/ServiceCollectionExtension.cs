@@ -39,7 +39,7 @@ namespace NorthwindApiApp
                 .AddAutoMapper(typeof(EntityFramework.MappingProfiles.MappingProfile));
         }
 
-        public static IServiceCollection AddInMemoryServices(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddInMemoryServices(this IServiceCollection services)
         {
             return services
                 .AddTransient<IProductManagementService, InMemory.Products.ProductManagementService>()
