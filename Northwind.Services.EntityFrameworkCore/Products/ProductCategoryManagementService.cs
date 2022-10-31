@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Northwind.Services.Products;
 using Context = Northwind.Services.EntityFrameworkCore.Models;
@@ -11,16 +12,20 @@ namespace Northwind.Services.EntityFrameworkCore.Products
     public class ProductCategoryManagementService : IProductCategoryManagementService
     {
         private readonly string connectionString;
+        private readonly IMapper mapper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProductCategoryManagementService"/> class.
         /// </summary>
-        public ProductCategoryManagementService(string connectionString)
+        /// <param name="mapper">Mapper for entity mapping.</param>
+        public ProductCategoryManagementService(string connectionString, IMapper mapper)
         {
             if (connectionString is null)
             {
                 throw new ArgumentNullException(nameof(connectionString));
             }
+
+            this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
 
             this.connectionString = connectionString;
         }
@@ -33,7 +38,7 @@ namespace Northwind.Services.EntityFrameworkCore.Products
             }
 
             await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
-            await db.Categories.AddAsync(MapProductCategory(productCategory));
+            await db.Categories.AddAsync(this.mapper.Map<Context.Category>(productCategory));
             await db.SaveChangesAsync();
             return productCategory.Id;
         }
@@ -73,7 +78,7 @@ namespace Northwind.Services.EntityFrameworkCore.Products
             var categories = from category in db.Categories
                            from name in names
                            where category.CategoryName == name
-                           select MapProductCategory(category);
+                           select this.mapper.Map<ProductCategory>(category);
 
             await foreach (var category in categories.AsAsyncEnumerable())
             {
@@ -88,7 +93,7 @@ namespace Northwind.Services.EntityFrameworkCore.Products
             var categories = db.Categories
                     .Skip(offset)
                     .Take(limit)
-                    .Select(c => MapProductCategory(c));
+                    .Select(c => this.mapper.Map<ProductCategory>(c));
 
             await foreach (var category in categories.AsAsyncEnumerable())
             {
@@ -106,7 +111,7 @@ namespace Northwind.Services.EntityFrameworkCore.Products
                 return null;
             }
 
-            return MapProductCategory(contextCategory);
+            return this.mapper.Map<ProductCategory>(contextCategory);
         }
 
         public async Task<bool> UpdateCategoryAsync(int categoryId, ProductCategory productCategory)
@@ -130,28 +135,6 @@ namespace Northwind.Services.EntityFrameworkCore.Products
 
             await db.SaveChangesAsync();
             return true;
-        }
-
-        private static ProductCategory MapProductCategory(Context.Category category)
-        {
-            return new ProductCategory()
-            {
-                Id = category.CategoryId,
-                Name = category.CategoryName,
-                Description = category.Description,
-                Picture = category.Picture,
-            };
-        }
-
-        private static Context.Category MapProductCategory(ProductCategory productCategory)
-        {
-            return new Context.Category()
-            {
-                CategoryId = productCategory.Id,
-                CategoryName = productCategory.Name,
-                Description = productCategory.Description,
-                Picture = productCategory.Picture,
-            };
         }
     }
 }

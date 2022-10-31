@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Northwind.Services.Products;
 using Context = Northwind.Services.EntityFrameworkCore.Models;
@@ -11,16 +12,19 @@ namespace Northwind.Services.EntityFrameworkCore.Products
     public class ProductManagementService : IProductManagementService
     {
         private readonly string connectionString;
+        private readonly IMapper mapper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProductManagementService"/> class.
         /// </summary>
-        public ProductManagementService(string connectionString)
+        public ProductManagementService(string connectionString, IMapper mapper)
         {
             if (connectionString is null)
             {
                 throw new ArgumentNullException(nameof(connectionString));
             }
+
+            this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
 
             this.connectionString = connectionString;
         }
@@ -33,7 +37,7 @@ namespace Northwind.Services.EntityFrameworkCore.Products
             }
 
             await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
-            await db.Products.AddAsync(MapProduct(product));
+            await db.Products.AddAsync(this.mapper.Map<Models.Product>(product));
             await db.SaveChangesAsync();
             return product.Id;
         }
@@ -69,7 +73,7 @@ namespace Northwind.Services.EntityFrameworkCore.Products
             var products = from product in db.Products
                            from name in names
                            where product.ProductName == name
-                           select MapProduct(product);
+                           select this.mapper.Map<Product>(product);
 
             await foreach (var product in products.AsAsyncEnumerable())
             {
@@ -84,7 +88,7 @@ namespace Northwind.Services.EntityFrameworkCore.Products
             var products = db.Products
                     .Skip(offset)
                     .Take(limit)
-                    .Select(p => MapProduct(p));
+                    .Select(p => this.mapper.Map<Product>(p));
 
             await foreach (var product in products.AsAsyncEnumerable())
             {
@@ -98,7 +102,7 @@ namespace Northwind.Services.EntityFrameworkCore.Products
 
             var products = from product in db.Products
                            where product.CategoryId == categoryId
-                           select MapProduct(product);
+                           select this.mapper.Map<Product>(product);
 
             await foreach (var product in products.AsAsyncEnumerable())
             {
@@ -116,7 +120,7 @@ namespace Northwind.Services.EntityFrameworkCore.Products
                 return null;
             }
 
-            return MapProduct(contextProduct);
+            return this.mapper.Map<Product>(contextProduct);
         }
 
         public async Task<bool> UpdateProductAsync(int productId, Product product)
@@ -146,40 +150,6 @@ namespace Northwind.Services.EntityFrameworkCore.Products
 
             await db.SaveChangesAsync();
             return true;
-        }
-
-        private static Product MapProduct(Context.Product product)
-        {
-            return new Product()
-            {
-                Id = product.ProductId,
-                CategoryId = product.CategoryId,
-                Discontinued = product.Discontinued,
-                Name = product.ProductName,
-                QuantityPerUnit = product.QuantityPerUnit,
-                ReorderLevel = product.ReorderLevel,
-                SupplierId = product.SupplierId,
-                UnitPrice = product.UnitPrice,
-                UnitsInStock = product.UnitsInStock,
-                UnitsOnOrder = product.UnitsOnOrder,
-            };
-        }
-
-        private static Context.Product MapProduct(Product product)
-        {
-            return new Context.Product()
-            {
-                ProductId = product.Id,
-                CategoryId = product.CategoryId,
-                Discontinued = product.Discontinued,
-                ProductName = product.Name,
-                QuantityPerUnit = product.QuantityPerUnit,
-                ReorderLevel = product.ReorderLevel,
-                SupplierId = product.SupplierId,
-                UnitPrice = product.UnitPrice,
-                UnitsInStock = product.UnitsInStock,
-                UnitsOnOrder = product.UnitsOnOrder,
-            };
         }
     }
 }

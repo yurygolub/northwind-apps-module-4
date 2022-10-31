@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using AutoMapper;
 using Northwind.DataAccess;
 using Northwind.DataAccess.Products;
 using Northwind.Services.Products;
@@ -15,17 +16,21 @@ namespace Northwind.Services.DataAccess.Products
     public sealed class ProductManagementService : IProductManagementService
     {
         private readonly IProductDataAccessObject dataAccessObject;
+        private readonly IMapper mapper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProductManagementService"/> class.
         /// </summary>
         /// <param name="northwindDataAccessFactory">Factory for creating Northwind DAO.</param>
-        public ProductManagementService(NorthwindDataAccessFactory northwindDataAccessFactory)
+        /// <param name="mapper">Mapper for entity mapping.</param>
+        public ProductManagementService(NorthwindDataAccessFactory northwindDataAccessFactory, IMapper mapper)
         {
             if (northwindDataAccessFactory is null)
             {
                 throw new ArgumentNullException(nameof(northwindDataAccessFactory));
             }
+
+            this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
 
             this.dataAccessObject = northwindDataAccessFactory.GetProductDataAccessObject();
         }
@@ -38,7 +43,7 @@ namespace Northwind.Services.DataAccess.Products
                 throw new ArgumentNullException(nameof(product));
             }
 
-            return await this.dataAccessObject.InsertProductAsync(MapProduct(product));
+            return await this.dataAccessObject.InsertProductAsync(this.mapper.Map<ProductTransferObject>(product));
         }
 
         /// <inheritdoc/>
@@ -63,7 +68,7 @@ namespace Northwind.Services.DataAccess.Products
             var products = this.dataAccessObject.SelectProductsByNameAsync(names);
             await foreach (var product in products)
             {
-                yield return MapProduct(product);
+                yield return this.mapper.Map<Product>(product);
             }
         }
 
@@ -73,7 +78,7 @@ namespace Northwind.Services.DataAccess.Products
             var products = this.dataAccessObject.SelectProductsAsync(offset, limit);
             await foreach (var product in products)
             {
-                yield return MapProduct(product);
+                yield return this.mapper.Map<Product>(product);
             }
         }
 
@@ -83,7 +88,7 @@ namespace Northwind.Services.DataAccess.Products
             var products = this.dataAccessObject.SelectProductByCategoryAsync(new[] { categoryId });
             await foreach (var product in products)
             {
-                yield return MapProduct(product);
+                yield return this.mapper.Map<Product>(product);
             }
         }
 
@@ -93,7 +98,7 @@ namespace Northwind.Services.DataAccess.Products
             try
             {
                 var productTransferObject = await this.dataAccessObject.FindProductAsync(productId);
-                return MapProduct(productTransferObject);
+                return this.mapper.Map<Product>(productTransferObject);
             }
             catch (ProductNotFoundException)
             {
@@ -109,46 +114,12 @@ namespace Northwind.Services.DataAccess.Products
                 throw new ArgumentNullException(nameof(product));
             }
 
-            if (await this.dataAccessObject.UpdateProductAsync(productId, MapProduct(product)))
+            if (await this.dataAccessObject.UpdateProductAsync(productId, this.mapper.Map<ProductTransferObject>(product)))
             {
                 return true;
             }
 
             return false;
-        }
-
-        private static Product MapProduct(ProductTransferObject productTransferObject)
-        {
-            return new Product()
-            {
-                Id = productTransferObject.Id,
-                CategoryId = productTransferObject.CategoryId,
-                Discontinued = productTransferObject.Discontinued,
-                Name = productTransferObject.Name,
-                QuantityPerUnit = productTransferObject.QuantityPerUnit,
-                ReorderLevel = productTransferObject.ReorderLevel,
-                SupplierId = productTransferObject.SupplierId,
-                UnitPrice = productTransferObject.UnitPrice,
-                UnitsInStock = productTransferObject.UnitsInStock,
-                UnitsOnOrder = productTransferObject.UnitsOnOrder,
-            };
-        }
-
-        private static ProductTransferObject MapProduct(Product product)
-        {
-            return new ProductTransferObject()
-            {
-                Id = product.Id,
-                CategoryId = product.CategoryId,
-                Discontinued = product.Discontinued,
-                Name = product.Name,
-                QuantityPerUnit = product.QuantityPerUnit,
-                ReorderLevel = product.ReorderLevel,
-                SupplierId = product.SupplierId,
-                UnitPrice = product.UnitPrice,
-                UnitsInStock = product.UnitsInStock,
-                UnitsOnOrder = product.UnitsOnOrder,
-            };
         }
     }
 }

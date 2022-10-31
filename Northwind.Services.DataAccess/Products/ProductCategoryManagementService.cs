@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using AutoMapper;
 using Northwind.DataAccess;
 using Northwind.DataAccess.Products;
 using Northwind.Services.Products;
@@ -15,17 +16,21 @@ namespace Northwind.Services.DataAccess.Products
     public sealed class ProductCategoryManagementService : IProductCategoryManagementService
     {
         private readonly IProductCategoryDataAccessObject dataAccessObject;
+        private readonly IMapper mapper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProductCategoryManagementService"/> class.
         /// </summary>
         /// <param name="northwindDataAccessFactory">Factory for creating Northwind DAO.</param>
-        public ProductCategoryManagementService(NorthwindDataAccessFactory northwindDataAccessFactory)
+        /// <param name="mapper">Mapper for entity mapping.</param>
+        public ProductCategoryManagementService(NorthwindDataAccessFactory northwindDataAccessFactory, IMapper mapper)
         {
             if (northwindDataAccessFactory is null)
             {
                 throw new ArgumentNullException(nameof(northwindDataAccessFactory));
             }
+
+            this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
 
             this.dataAccessObject = northwindDataAccessFactory.GetProductCategoryDataAccessObject();
         }
@@ -38,7 +43,7 @@ namespace Northwind.Services.DataAccess.Products
                 throw new ArgumentNullException(nameof(productCategory));
             }
 
-            return await this.dataAccessObject.InsertProductCategoryAsync(MapProductCategory(productCategory));
+            return await this.dataAccessObject.InsertProductCategoryAsync(this.mapper.Map<ProductCategoryTransferObject>(productCategory));
         }
 
         /// <inheritdoc/>
@@ -63,7 +68,7 @@ namespace Northwind.Services.DataAccess.Products
             var productCategories = this.dataAccessObject.SelectProductCategoriesByNameAsync(names);
             await foreach (var productCategory in productCategories)
             {
-                yield return MapProductCategory(productCategory);
+                yield return this.mapper.Map<ProductCategory>(productCategory);
             }
         }
 
@@ -73,7 +78,7 @@ namespace Northwind.Services.DataAccess.Products
             var productCategories = this.dataAccessObject.SelectProductCategoriesAsync(offset, limit);
             await foreach (var productCategory in productCategories)
             {
-                yield return MapProductCategory(productCategory);
+                yield return this.mapper.Map<ProductCategory>(productCategory);
             }
         }
 
@@ -83,7 +88,7 @@ namespace Northwind.Services.DataAccess.Products
             try
             {
                 var productTransferObject = await this.dataAccessObject.FindProductCategoryAsync(categoryId);
-                return MapProductCategory(productTransferObject);
+                return this.mapper.Map<ProductCategory>(productTransferObject);
             }
             catch (ProductCategoryNotFoundException)
             {
@@ -99,34 +104,12 @@ namespace Northwind.Services.DataAccess.Products
                 throw new ArgumentNullException(nameof(productCategory));
             }
 
-            if (await this.dataAccessObject.UpdateProductCategoryAsync(categoryId, MapProductCategory(productCategory)))
+            if (await this.dataAccessObject.UpdateProductCategoryAsync(categoryId, this.mapper.Map<ProductCategoryTransferObject>(productCategory)))
             {
                 return true;
             }
 
             return false;
-        }
-
-        private static ProductCategory MapProductCategory(ProductCategoryTransferObject productCategoruTransferObject)
-        {
-            return new ProductCategory()
-            {
-                Id = productCategoruTransferObject.Id,
-                Name = productCategoruTransferObject.Name,
-                Description = productCategoruTransferObject.Description,
-                Picture = productCategoruTransferObject.Picture,
-            };
-        }
-
-        private static ProductCategoryTransferObject MapProductCategory(ProductCategory productCategory)
-        {
-            return new ProductCategoryTransferObject()
-            {
-                Id = productCategory.Id,
-                Name = productCategory.Name,
-                Description = productCategory.Description,
-                Picture = productCategory.Picture,
-            };
         }
     }
 }

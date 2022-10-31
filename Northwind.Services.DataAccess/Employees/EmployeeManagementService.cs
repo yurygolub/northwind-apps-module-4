@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using AutoMapper;
 using Northwind.DataAccess;
 using Northwind.DataAccess.Employees;
 using Northwind.Services.Employees;
@@ -13,17 +14,21 @@ namespace Northwind.Services.DataAccess.Employees
     public class EmployeeManagementService : IEmployeeManagementService
     {
         private readonly IEmployeeDataAccessObject dataAccessObject;
+        private readonly IMapper mapper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EmployeeManagementService"/> class.
         /// </summary>
         /// <param name="northwindDataAccessFactory">Factory for creating Northwind DAO.</param>
-        public EmployeeManagementService(NorthwindDataAccessFactory northwindDataAccessFactory)
+        /// <param name="mapper">Mapper for entity mapping.</param>
+        public EmployeeManagementService(NorthwindDataAccessFactory northwindDataAccessFactory, IMapper mapper)
         {
             if (northwindDataAccessFactory is null)
             {
                 throw new ArgumentNullException(nameof(northwindDataAccessFactory));
             }
+
+            this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
 
             this.dataAccessObject = northwindDataAccessFactory.GetEmployeeDataAccessObject();
         }
@@ -36,7 +41,7 @@ namespace Northwind.Services.DataAccess.Employees
                 throw new ArgumentNullException(nameof(employee));
             }
 
-            return await this.dataAccessObject.InsertEmployeeAsync(MapEmployee(employee));
+            return await this.dataAccessObject.InsertEmployeeAsync(this.mapper.Map<EmployeeTransferObject>(employee));
         }
 
         /// <inheritdoc/>
@@ -56,7 +61,7 @@ namespace Northwind.Services.DataAccess.Employees
             var employees = this.dataAccessObject.SelectEmployeesAsync(offset, limit);
             await foreach (var employee in employees)
             {
-                yield return MapEmployee(employee);
+                yield return this.mapper.Map<Employee>(employee);
             }
         }
 
@@ -66,7 +71,7 @@ namespace Northwind.Services.DataAccess.Employees
             try
             {
                 var employeeTransferObject = await this.dataAccessObject.FindEmployeeAsync(employeeId);
-                return MapEmployee(employeeTransferObject);
+                return this.mapper.Map<Employee>(employeeTransferObject);
             }
             catch (EmployeeNotFoundException)
             {
@@ -82,62 +87,12 @@ namespace Northwind.Services.DataAccess.Employees
                 throw new ArgumentNullException(nameof(employee));
             }
 
-            if (await this.dataAccessObject.UpdateEmployeeAsync(employeeId, MapEmployee(employee)))
+            if (await this.dataAccessObject.UpdateEmployeeAsync(employeeId, this.mapper.Map<EmployeeTransferObject>(employee)))
             {
                 return true;
             }
 
             return false;
-        }
-
-        private static Employee MapEmployee(EmployeeTransferObject employee)
-        {
-            return new Employee()
-            {
-                EmployeeID = employee.EmployeeID,
-                Address = employee.Address,
-                BirthDate = employee.BirthDate,
-                City = employee.City,
-                Country = employee.Country,
-                Extension = employee.Extension,
-                FirstName = employee.FirstName,
-                LastName = employee.LastName,
-                HireDate = employee.HireDate,
-                HomePhone = employee.HomePhone,
-                Notes = employee.Notes,
-                Photo = employee.Photo,
-                PhotoPath = employee.PhotoPath,
-                PostalCode = employee.PostalCode,
-                Region = employee.Region,
-                ReportsTo = employee.ReportsTo,
-                Title = employee.Title,
-                TitleOfCourtesy = employee.TitleOfCourtesy,
-            };
-        }
-
-        private static EmployeeTransferObject MapEmployee(Employee employee)
-        {
-            return new EmployeeTransferObject()
-            {
-                EmployeeID = employee.EmployeeID,
-                Address = employee.Address,
-                BirthDate = employee.BirthDate,
-                City = employee.City,
-                Country = employee.Country,
-                Extension = employee.Extension,
-                FirstName = employee.FirstName,
-                LastName = employee.LastName,
-                HireDate = employee.HireDate,
-                HomePhone = employee.HomePhone,
-                Notes = employee.Notes,
-                Photo = employee.Photo,
-                PhotoPath = employee.PhotoPath,
-                PostalCode = employee.PostalCode,
-                Region = employee.Region,
-                ReportsTo = employee.ReportsTo,
-                Title = employee.Title,
-                TitleOfCourtesy = employee.TitleOfCourtesy,
-            };
         }
     }
 }

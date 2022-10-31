@@ -23,7 +23,8 @@ namespace NorthwindApiApp
                 .AddTransient<IEmployeeManagementService, DataAccess.Employees.EmployeeManagementService>()
                 .AddTransient<IEmployeePicturesService, DataAccess.Employees.EmployeePicturesService>()
                 .AddScoped(s => new SqlConnection(configuration.GetConnectionString("SqlConnection")))
-                .AddTransient<NorthwindDataAccessFactory, SqlServerDataAccessFactory>();
+                .AddTransient<NorthwindDataAccessFactory, SqlServerDataAccessFactory>()
+                .AddAutoMapper(typeof(DataAccess.MappingProfiles.MappingProfile));
         }
 
         public static IServiceCollection AddEfServices(this IServiceCollection services, IConfiguration configuration)
@@ -34,7 +35,8 @@ namespace NorthwindApiApp
                 .AddTransient<IProductCategoryPicturesService, EntityFramework.Products.ProductCategoryPicturesService>()
                 .AddTransient<IEmployeeManagementService, EntityFramework.Employees.EmployeeManagementService>()
                 .AddTransient<IEmployeePicturesService, EntityFramework.Employees.EmployeePicturesService>()
-                .AddScoped(s => configuration.GetConnectionString("SqlConnection"));
+                .AddScoped(s => configuration.GetConnectionString("SqlConnection"))
+                .AddAutoMapper(typeof(EntityFramework.MappingProfiles.MappingProfile));
         }
 
         public static IServiceCollection AddInMemoryServices(this IServiceCollection services, IConfiguration configuration)
@@ -46,7 +48,8 @@ namespace NorthwindApiApp
                 .AddTransient<IEmployeeManagementService, InMemory.Employees.EmployeeManagementService>()
                 .AddTransient<IEmployeePicturesService, InMemory.Employees.EmployeePicturesService>()
                 .AddSingleton<SeedData>()
-                .AddDbContext<InMemory.NorthwindContext>(opt => opt.UseInMemoryDatabase("Northwind"), ServiceLifetime.Singleton);
+                .AddDbContext<InMemory.NorthwindContext>(opt => opt.UseInMemoryDatabase("Northwind"), ServiceLifetime.Singleton)
+                .AddAutoMapper(typeof(InMemory.MappingProfiles.MappingProfile));
         }
     }
 }
