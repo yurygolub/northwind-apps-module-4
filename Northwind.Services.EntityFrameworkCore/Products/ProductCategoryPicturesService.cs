@@ -2,7 +2,6 @@
 using System.IO;
 using System.Threading.Tasks;
 using Northwind.Services.Products;
-using Context = Northwind.Services.EntityFrameworkCore.Models;
 
 namespace Northwind.Services.EntityFrameworkCore.Products
 {
@@ -20,7 +19,7 @@ namespace Northwind.Services.EntityFrameworkCore.Products
 
         public async Task<Stream> GetProductCategoryPictureAsync(int categoryId)
         {
-            await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
+            await using Models.NorthwindContext db = new Models.NorthwindContext(this.connectionString);
 
             var contextCategory = await db.Categories.FindAsync(categoryId);
             if (contextCategory?.Picture is null)
@@ -33,7 +32,7 @@ namespace Northwind.Services.EntityFrameworkCore.Products
 
         public async Task<bool> DeleteProductCategoryPictureAsync(int categoryId)
         {
-            await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
+            await using Models.NorthwindContext db = new Models.NorthwindContext(this.connectionString);
 
             var contextCategory = await db.Categories.FindAsync(categoryId);
             if (contextCategory is null)
@@ -51,7 +50,7 @@ namespace Northwind.Services.EntityFrameworkCore.Products
         {
             _ = stream ?? throw new ArgumentNullException(nameof(stream));
 
-            await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
+            await using Models.NorthwindContext db = new Models.NorthwindContext(this.connectionString);
 
             var contextCategory = await db.Categories.FindAsync(categoryId);
             if (contextCategory is null)

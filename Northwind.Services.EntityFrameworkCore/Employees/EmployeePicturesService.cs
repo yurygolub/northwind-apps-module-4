@@ -2,7 +2,6 @@
 using System.IO;
 using System.Threading.Tasks;
 using Northwind.Services.Employees;
-using Context = Northwind.Services.EntityFrameworkCore.Models;
 
 namespace Northwind.Services.EntityFrameworkCore.Employees
 {
@@ -20,7 +19,7 @@ namespace Northwind.Services.EntityFrameworkCore.Employees
 
         public async Task<Stream> GetEmployeePictureAsync(int employeeId)
         {
-            await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
+            await using Models.NorthwindContext db = new Models.NorthwindContext(this.connectionString);
             var employee = await db.Employees.FindAsync(employeeId);
             if (employee?.Photo is null)
             {
@@ -32,7 +31,7 @@ namespace Northwind.Services.EntityFrameworkCore.Employees
 
         public async Task<bool> DeleteEmployeePictureAsync(int employeeId)
         {
-            await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
+            await using Models.NorthwindContext db = new Models.NorthwindContext(this.connectionString);
             var employee = await db.Employees.FindAsync(employeeId);
             if (employee is null)
             {
@@ -49,7 +48,7 @@ namespace Northwind.Services.EntityFrameworkCore.Employees
         {
             _ = stream ?? throw new ArgumentNullException(nameof(stream));
 
-            await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
+            await using Models.NorthwindContext db = new Models.NorthwindContext(this.connectionString);
             var employee = await db.Employees.FindAsync(employeeId);
             if (employee is null)
             {

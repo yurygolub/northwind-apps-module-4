@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Northwind.Services.Employees;
-using Context = Northwind.Services.EntityFrameworkCore.Models;
 
 namespace Northwind.Services.EntityFrameworkCore.Employees
 {
@@ -30,15 +29,15 @@ namespace Northwind.Services.EntityFrameworkCore.Employees
         {
             _ = employee ?? throw new ArgumentNullException(nameof(employee));
 
-            await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
-            await db.Employees.AddAsync(this.mapper.Map<Context.Employee>(employee));
+            await using Models.NorthwindContext db = new Models.NorthwindContext(this.connectionString);
+            await db.Employees.AddAsync(this.mapper.Map<Models.Employee>(employee));
             await db.SaveChangesAsync();
             return employee.EmployeeID;
         }
 
         public async Task<bool> DeleteEmployeeAsync(int employeeId)
         {
-            await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
+            await using Models.NorthwindContext db = new Models.NorthwindContext(this.connectionString);
 
             var employee = await db.Employees.FindAsync(employeeId);
             if (employee != null)
@@ -72,7 +71,7 @@ namespace Northwind.Services.EntityFrameworkCore.Employees
 
         public async IAsyncEnumerable<Employee> GetEmployeesAsync(int offset, int limit)
         {
-            await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
+            await using Models.NorthwindContext db = new Models.NorthwindContext(this.connectionString);
 
             var employees = db.Employees
                 .Skip(offset)
@@ -87,7 +86,7 @@ namespace Northwind.Services.EntityFrameworkCore.Employees
 
         public async Task<Employee> GetEmployeeAsync(int employeeId)
         {
-            await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
+            await using Models.NorthwindContext db = new Models.NorthwindContext(this.connectionString);
 
             var contextEmployee = await db.Employees.FindAsync(employeeId);
             if (contextEmployee is null)
@@ -102,7 +101,7 @@ namespace Northwind.Services.EntityFrameworkCore.Employees
         {
             _ = employee ?? throw new ArgumentNullException(nameof(employee));
 
-            await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
+            await using Models.NorthwindContext db = new Models.NorthwindContext(this.connectionString);
 
             var contextEmployee = await db.Employees.FindAsync(employeeId);
             if (contextEmployee is null)

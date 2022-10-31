@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Northwind.Services.Products;
-using Context = Northwind.Services.EntityFrameworkCore.Models;
 
 namespace Northwind.Services.EntityFrameworkCore.Products
 {
@@ -28,15 +27,15 @@ namespace Northwind.Services.EntityFrameworkCore.Products
         {
             _ = productCategory ?? throw new ArgumentNullException(nameof(productCategory));
 
-            await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
-            await db.Categories.AddAsync(this.mapper.Map<Context.Category>(productCategory));
+            await using Models.NorthwindContext db = new Models.NorthwindContext(this.connectionString);
+            await db.Categories.AddAsync(this.mapper.Map<Models.Category>(productCategory));
             await db.SaveChangesAsync();
             return productCategory.Id;
         }
 
         public async Task<bool> DeleteCategoryAsync(int categoryId)
         {
-            await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
+            await using Models.NorthwindContext db = new Models.NorthwindContext(this.connectionString);
 
             var category = await db.Categories.FindAsync(categoryId);
             if (category != null)
@@ -61,7 +60,7 @@ namespace Northwind.Services.EntityFrameworkCore.Products
         {
             _ = names ?? throw new ArgumentNullException(nameof(names));
 
-            await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
+            await using Models.NorthwindContext db = new Models.NorthwindContext(this.connectionString);
 
             var categories = from category in db.Categories
                              from name in names
@@ -76,7 +75,7 @@ namespace Northwind.Services.EntityFrameworkCore.Products
 
         public async IAsyncEnumerable<ProductCategory> GetCategoriesAsync(int offset, int limit)
         {
-            await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
+            await using Models.NorthwindContext db = new Models.NorthwindContext(this.connectionString);
 
             var categories = db.Categories
                 .Skip(offset)
@@ -91,7 +90,7 @@ namespace Northwind.Services.EntityFrameworkCore.Products
 
         public async Task<ProductCategory> GetCategoryAsync(int categoryId)
         {
-            await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
+            await using Models.NorthwindContext db = new Models.NorthwindContext(this.connectionString);
 
             var contextCategory = await db.Categories.FindAsync(categoryId);
             if (contextCategory is null)
@@ -106,7 +105,7 @@ namespace Northwind.Services.EntityFrameworkCore.Products
         {
             _ = productCategory ?? throw new ArgumentNullException(nameof(productCategory));
 
-            await using Context.NorthwindContext db = new Context.NorthwindContext(this.connectionString);
+            await using Models.NorthwindContext db = new Models.NorthwindContext(this.connectionString);
 
             var contextCategory = await db.Categories.FindAsync(categoryId);
             if (contextCategory is null)
