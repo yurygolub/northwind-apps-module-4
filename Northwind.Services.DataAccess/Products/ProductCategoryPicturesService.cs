@@ -54,12 +54,7 @@ namespace Northwind.Services.DataAccess.Products
 
             category.Picture = null;
 
-            if (await this.dataAccessObject.UpdateProductCategoryAsync(categoryId, category))
-            {
-                return true;
-            }
-
-            return true;
+            return await this.dataAccessObject.UpdateProductCategoryAsync(categoryId, category);
         }
 
         public async Task<bool> UpdateProductCategoryPictureAsync(int categoryId, Stream stream)
@@ -76,12 +71,7 @@ namespace Northwind.Services.DataAccess.Products
             await stream.CopyToAsync(memoryStream);
             memoryStream.ToArray().CopyTo(category.Picture, 78);
 
-            if (await this.dataAccessObject.UpdateProductCategoryAsync(categoryId, category))
-            {
-                return true;
-            }
-
-            return true;
+            return await this.dataAccessObject.UpdateProductCategoryAsync(categoryId, category);
         }
     }
 }

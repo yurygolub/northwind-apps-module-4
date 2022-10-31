@@ -50,12 +50,7 @@ namespace Northwind.Services.DataAccess.Employees
 
             employee.Photo = null;
 
-            if (!await this.dataAccessObject.UpdateEmployeeAsync(employeeId, employee))
-            {
-                return false;
-            }
-
-            return true;
+            return await this.dataAccessObject.UpdateEmployeeAsync(employeeId, employee);
         }
 
         public async Task<bool> UpdateEmployeePictureAsync(int employeeId, Stream stream)
@@ -72,12 +67,7 @@ namespace Northwind.Services.DataAccess.Employees
             await stream.CopyToAsync(memoryStream);
             memoryStream.ToArray().CopyTo(employee.Photo, 78);
 
-            if (!await this.dataAccessObject.UpdateEmployeeAsync(employeeId, employee))
-            {
-                return false;
-            }
-
-            return true;
+            return await this.dataAccessObject.UpdateEmployeeAsync(employeeId, employee);
         }
     }
 }

@@ -42,12 +42,7 @@ namespace Northwind.Services.DataAccess.Products
         /// <inheritdoc/>
         public async Task<bool> DestroyProductAsync(int productId)
         {
-            if (await this.dataAccessObject.DeleteProductAsync(productId))
-            {
-                return true;
-            }
-
-            return false;
+            return await this.dataAccessObject.DeleteProductAsync(productId);
         }
 
         /// <inheritdoc/>
@@ -101,12 +96,9 @@ namespace Northwind.Services.DataAccess.Products
         {
             _ = product ?? throw new ArgumentNullException(nameof(product));
 
-            if (await this.dataAccessObject.UpdateProductAsync(productId, this.mapper.Map<ProductTransferObject>(product)))
-            {
-                return true;
-            }
-
-            return false;
+            return await this.dataAccessObject.UpdateProductAsync(
+                productId,
+                this.mapper.Map<ProductTransferObject>(product));
         }
     }
 }
